@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+      "module": "NodeNext",
+      "target": "ESNext",
+      "lib": [
+        "ESNext"
+      ],
+      "moduleResolution": "NodeNext",
+      "sourceMap": true,
+      "declaration": false,
+      "esModuleInterop": true,
+      "resolveJsonModule": true,
+      "strictNullChecks": false,
+      "outDir": "build/out/",
+      "skipLibCheck": true
+    },
+    "include": ["index.ts", "lib/**/*"],  
+  }

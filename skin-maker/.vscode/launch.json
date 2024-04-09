@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+    "name": "Debug",
+    "type": "node",
+    "request": "launch",
+    "runtimeExecutable": "node",
+    "runtimeArgs": ["--loader", "ts-node/esm", "--nolazy", "-r", "ts-node/register/transpile-only"],
+    "args": ["index.ts", "-d", "data/"],
+    "cwd": "${workspaceRoot}",
+    "internalConsoleOptions": "openOnSessionStart",
+    "skipFiles": ["<node_internals>/**", "node_modules/**"]
+        }
+      ]
+    }
