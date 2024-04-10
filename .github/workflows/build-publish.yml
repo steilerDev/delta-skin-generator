@@ -7,8 +7,10 @@ on:
 
 jobs:
   publish-dockerhub:
-    name: Build & Publish project to npm
+    name: Build & Publish 
     runs-on: ubuntu-latest
+    permissions:
+        contents: write
     steps:
     - name: checkout
       uses: actions/checkout@v4
