@@ -19,11 +19,13 @@
     "build:knip": "npx knip --config knip.config.jsonc",
     "build:typescript": "npx tsc",
     "build": "npm run build:lint && npm run build:knip && npm run build:typescript",
-    "execute": "node dist/index.js"
+    "execute": "node dist/index.js",
+    "docs": ""
   },
   "release": {
     "branches": [
-      "main", {
+      "main",
+      {
         "name": "dev",
         "prerelease": true
       }
@@ -39,6 +41,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.6.0",
     "@typescript-eslint/parser": "^7.6.0",
+    "docsify-cli": "^4.4.4",
     "eslint": "^8.51.0",
     "knip": "^5.9.3",
     "ts-node": "^10.9.2",
