@@ -4,13 +4,13 @@
 
 # Delta Skin Generator
 
-> A magical documentation site generator.
+> Emulator skin creation tool for deltaskins
 
-- Simple and lightweight
-- No statically built html files
-- Multiple themes
+- Graphical
+- Component based
+- AltSkin support
 
-[GitHub](https://github.com/docsifyjs/docsify/)
+[GitHub](https://github.com/steilerdev/delta-skin-generator)
 [Get Started](#guide)
 
 <!-- background color -->

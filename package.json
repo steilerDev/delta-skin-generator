@@ -1,5 +1,5 @@
 {
-  "name": "delta-skin-generator",
+  "name": "@steilerdev/dsg",
   "version": "0.0.0-development",
   "description": "Component based emulator skin creation for deltaskins, with support for altSkins",
   "author": "steilerDev",
