@@ -20,7 +20,7 @@
     "build:typescript": "npx tsc",
     "build": "npm run build:lint && npm run build:knip && npm run build:typescript",
     "execute": "node dist/index.js",
-    "docs": ""
+    "docs": "npx docsify serve docs"
   },
   "release": {
     "branches": [
