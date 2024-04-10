@@ -1,0 +1,10 @@
+{
+    "entry": ["index.ts"],
+    "project": ["lib/**/*.ts"],
+    "ignoreDependencies": [
+        "@typescript-eslint/eslint-plugin", // Loaded by eslint.config.json
+        "@typescript-eslint/parser", // Needed by @typescript-eslint/eslint-plugin
+    ],
+    "ignoreBinaries": [ // Not sure why they are reported as unused
+    ]
+}

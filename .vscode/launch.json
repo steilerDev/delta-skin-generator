@@ -7,7 +7,7 @@
     "request": "launch",
     "runtimeExecutable": "node",
     "runtimeArgs": ["--loader", "ts-node/esm", "--nolazy", "-r", "ts-node/register/transpile-only"],
-    "args": ["index.ts", "-d", "data/"],
+    "args": ["index.ts", "-d", "data1/", "-i"],
     "cwd": "${workspaceRoot}",
     "internalConsoleOptions": "openOnSessionStart",
     "skipFiles": ["<node_internals>/**", "node_modules/**"]
