@@ -1,6 +1,6 @@
 {
   "name": "delta-skin-generator",
-  "version": "0.0.1",
+  "version": "0.0.0-development",
   "description": "Component based emulator skin creation for deltaskins, with support for altSkins",
   "author": "steilerDev",
   "repository": {
