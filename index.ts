@@ -64,5 +64,6 @@ if(cli.flags.init) {
     process.exit(0)
 }
 
+
 const canvas = await Canvas.create(`data/canvas.svg`, projectDir)
 await canvas.render()
