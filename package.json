@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "Component based emulator skin creation for deltaskins, with support for altSkins",
   "author": "steilerDev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/steilerDev/delta-skin-generator.git"
+  },
   "license": "GPL-3.0-or-later",
   "type": "module",
   "main": "dist/index.js",
