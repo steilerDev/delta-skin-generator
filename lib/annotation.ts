@@ -1,16 +1,16 @@
-import { JSONPath } from "jsonpath-plus";
-import { INode } from "svgson";
+import { JSONPath } from "jsonpath-plus"
+import { INode } from "svgson"
 
 export type AnnotationString = `@component` | `@element`
 
 export class Annotation<T extends AnnotationString> {
-    annotationString: T;
+    annotationString: T
 
-    root: INode;
-    pathToAnnotationValue: string[];
+    root: INode
+    pathToAnnotationValue: string[]
 
     static RegExp(annotationString: AnnotationString) {
-        return new RegExp(`${annotationString}/([A-Za-z0-9]+)(?:/([A-Za-z0-9]+))?`);
+        return new RegExp(`${annotationString}/([A-Za-z0-9]+)(?:/([A-Za-z0-9]+))?`)
     }
     /**
      * 
@@ -19,41 +19,41 @@ export class Annotation<T extends AnnotationString> {
      * @param annotationString The used annotation string
      */
     constructor(annotationString: T, root: INode, pathToAnnotationValue: string[]) {
-        this.annotationString = annotationString;
-        this.root = root;
-        this.pathToAnnotationValue = pathToAnnotationValue;
+        this.annotationString = annotationString
+        this.root = root
+        this.pathToAnnotationValue = pathToAnnotationValue
     }
 
     toString(): string {
-        return this.value;
+        return this.value
     }
 
     get value(): string {
-        return this.match[1];
+        return this.match[1]
     }
 
     get subValue(): string {
-        return this.match[2];
+        return this.match[2]
     }
 
     get match(): RegExpMatchArray {
-        const fullNodeValue = JSONPath({path: this.pathToAnnotationValue, json: this.root})[0] as string;
-        return fullNodeValue.match(Annotation.RegExp(this.annotationString));
+        const fullNodeValue = JSONPath({path: this.pathToAnnotationValue, json: this.root})[0] as string
+        return fullNodeValue.match(Annotation.RegExp(this.annotationString))
     }
 
     get pathToParent(): string[] {
-        return this.pathToAnnotationValue.slice(0, -5);
+        return this.pathToAnnotationValue.slice(0, -5)
     }
 
     get pathStringToParent(): string {
-        return JSONPath.toPathString(this.pathToParent);
+        return JSONPath.toPathString(this.pathToParent)
     }
 
     get pathPointerToParent(): string {
-        return JSONPath.toPointer(this.pathToParent);
+        return JSONPath.toPointer(this.pathToParent)
     }
 
     get parentNode(): INode {
-        return JSONPath({path: this.pathToParent, json: this.root})[0];
+        return JSONPath({path: this.pathToParent, json: this.root})[0]
     }
 }

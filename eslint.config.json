@@ -20,7 +20,7 @@
         "indent": ["error", 4],
         "linebreak-style": ["error", "unix"],
         "quotes": ["error", "backtick"],
-        "semi": ["error", "always"],
+        "semi": ["error", "never"],
         "eol-last": ["error", "never"]
     }
 }

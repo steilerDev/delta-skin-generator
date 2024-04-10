@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import meow from 'meow';
-import path from 'path';
-import { Canvas } from "./lib/canvas.js";
-import fs from 'fs/promises';
-import { DIR_COMPONENTS, DIR_ELEMENTS, DIR_REPRESENTATIONS, RepresentationString, representationStringsToRepresentations } from './lib/constants.js';
-import { Template } from './lib/template.js';
-import { Log } from './lib/log.js';
+import meow from 'meow'
+import path from 'path'
+import { Canvas } from "./lib/canvas.js"
+import fs from 'fs/promises'
+import { DIR_COMPONENTS, DIR_ELEMENTS, DIR_REPRESENTATIONS, RepresentationString, representationStringsToRepresentations } from './lib/constants.js'
+import { Template } from './lib/template.js'
+import { Log } from './lib/log.js'
 
 const cli = meow(`
 	Usage
@@ -41,29 +41,28 @@ const cli = meow(`
             default: [`all`]
         }
     }
-});
+})
 
 const projectDir = path.isAbsolute(cli.flags.skinDir) 
     ? cli.flags.skinDir
     : path.join(
         process.cwd(),
         cli.flags.skinDir
-    );
+    )
 
-const relevantRepresentations = representationStringsToRepresentations(cli.flags.representations as RepresentationString[]);
+const relevantRepresentations = representationStringsToRepresentations(cli.flags.representations as RepresentationString[])
 
 if(cli.flags.init) {
-    Log.info(`Initializing directory ${cli.flags.skinDir}...`);
+    Log.info(`Initializing directory ${cli.flags.skinDir}...`)
 	
-    await fs.mkdir(path.join(projectDir, DIR_REPRESENTATIONS), {recursive: true});
-    await fs.mkdir(path.join(projectDir, DIR_COMPONENTS), {recursive: true});
-    await fs.mkdir(path.join(projectDir, DIR_ELEMENTS), {recursive: true});
+    await fs.mkdir(path.join(projectDir, DIR_REPRESENTATIONS), {recursive: true})
+    await fs.mkdir(path.join(projectDir, DIR_COMPONENTS), {recursive: true})
+    await fs.mkdir(path.join(projectDir, DIR_ELEMENTS), {recursive: true})
 
-    await Template.create(projectDir, relevantRepresentations);
+    await Template.create(projectDir, relevantRepresentations)
 
-    process.exit(0);
+    process.exit(0)
 }
 
-const canvas = await Canvas.create(`data/canvas.svg`, projectDir);
-await canvas.render();
-debugger;
+const canvas = await Canvas.create(`data/canvas.svg`, projectDir)
+await canvas.render()

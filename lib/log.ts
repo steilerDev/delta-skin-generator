@@ -1,17 +1,17 @@
 export const Log = {
     log: (msg: string) => {
-        console.log(msg);
+        console.log(msg)
     },
     debug: (msg: string) => {
-        Log.log(`DEBUG: ${msg}`);
+        Log.log(`DEBUG: ${msg}`)
     },
     info: (msg: string) => {
-        Log.log(`INFO: ${msg}`);
+        Log.log(`INFO: ${msg}`)
     },
     warn: (msg: string) => {
-        Log.log(`WARN: ${msg}`);
+        Log.log(`WARN: ${msg}`)
     },
     error: (msg: string) => {
-        Log.log(`ERROR: ${msg}`);
+        Log.log(`ERROR: ${msg}`)
     },
-};
+}

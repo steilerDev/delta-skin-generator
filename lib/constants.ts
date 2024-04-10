@@ -1,6 +1,6 @@
 // From: https://noah978.gitbook.io/delta-docs/skins#changing-the-images
 
-const UNKNOWN = -1;
+const UNKNOWN = -1
 
 export type RepresentationString = `all` | `iphone` | `iphone-standard` | `iphone-e2e` | `ipad` | `ipad-standard` | `ipad-splitview`
 
@@ -80,51 +80,51 @@ export const REPRESENTATIONS = {
             }
         }
     }
-};
+}
 
 export const representationStringsToRepresentations = (strings: RepresentationString[]) => {
-    const relevantRepresentations = new Set<Representation>();
+    const relevantRepresentations = new Set<Representation>()
     for(const representation of strings) {
         switch(representation) {
         default:
         case `all`:
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.standard);
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.edgeToEdge);
-            relevantRepresentations.add(REPRESENTATIONS.iPad.splitView);
-            relevantRepresentations.add(REPRESENTATIONS.iPad.standard);
-            break;
+            relevantRepresentations.add(REPRESENTATIONS.iPhone.standard)
+            relevantRepresentations.add(REPRESENTATIONS.iPhone.edgeToEdge)
+            relevantRepresentations.add(REPRESENTATIONS.iPad.splitView)
+            relevantRepresentations.add(REPRESENTATIONS.iPad.standard)
+            break
         case `iphone`:
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.standard);
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.edgeToEdge);
-            break;
+            relevantRepresentations.add(REPRESENTATIONS.iPhone.standard)
+            relevantRepresentations.add(REPRESENTATIONS.iPhone.edgeToEdge)
+            break
         case `iphone-standard`:
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.standard);
-            break;
+            relevantRepresentations.add(REPRESENTATIONS.iPhone.standard)
+            break
         case `iphone-e2e`:
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.edgeToEdge);
-            break;
+            relevantRepresentations.add(REPRESENTATIONS.iPhone.edgeToEdge)
+            break
         case `ipad`:
-            relevantRepresentations.add(REPRESENTATIONS.iPad.splitView);
-            relevantRepresentations.add(REPRESENTATIONS.iPad.standard);
-            break;
+            relevantRepresentations.add(REPRESENTATIONS.iPad.splitView)
+            relevantRepresentations.add(REPRESENTATIONS.iPad.standard)
+            break
         case `ipad-standard`:
-            relevantRepresentations.add(REPRESENTATIONS.iPad.standard);
-            break;
+            relevantRepresentations.add(REPRESENTATIONS.iPad.standard)
+            break
         case `ipad-splitview`:
-            relevantRepresentations.add(REPRESENTATIONS.iPad.splitView);
-            break;
+            relevantRepresentations.add(REPRESENTATIONS.iPad.splitView)
+            break
         }
     }
-    return Array.from(relevantRepresentations);
-};
+    return Array.from(relevantRepresentations)
+}
 
 export const REPRESENTATION_FILES = [
     `portrait.svg`,
     `portrait-alt.svg`,
     `landscape.svg`,
     `landscape-alt.svg`
-];
+]
 
-export const DIR_REPRESENTATIONS = `representations`;
-export const DIR_COMPONENTS = `components`;
-export const DIR_ELEMENTS = `elements`;
+export const DIR_REPRESENTATIONS = `representations`
+export const DIR_COMPONENTS = `components`
+export const DIR_ELEMENTS = `elements`

@@ -1,50 +1,50 @@
-import { DIR_REPRESENTATIONS, Representation, REPRESENTATION_FILES } from "./constants.js";
-import fs from 'fs/promises';
-import path from 'path';
-import {INode, stringify} from 'svgson';
-import { Log } from "./log.js";
+import { DIR_REPRESENTATIONS, Representation, REPRESENTATION_FILES } from "./constants.js"
+import fs from 'fs/promises'
+import path from 'path'
+import {INode, stringify} from 'svgson'
+import { Log } from "./log.js"
 
 export class Template {
-    projectDir: string;
-    representation: Representation;
+    projectDir: string
+    representation: Representation
 
     static async create(projectDir: string, representations: Representation[]) {
         for(const representation of representations) {
-            const template = new Template(projectDir, representation);
-            await template.writeTemplate();
+            const template = new Template(projectDir, representation)
+            await template.writeTemplate()
         }
     }
 
     constructor(projectDir: string, representation: Representation) {
-        this.projectDir = projectDir;
-        this.representation = representation;
+        this.projectDir = projectDir
+        this.representation = representation
     }
 
     async writeTemplate() {
-        Log.info(`Creating template for ${this.representation.id}...`);
-        const dirName = path.join(this.projectDir, DIR_REPRESENTATIONS, this.representation.id);
-        await fs.mkdir(dirName, {recursive: true});
+        Log.info(`Creating template for ${this.representation.id}...`)
+        const dirName = path.join(this.projectDir, DIR_REPRESENTATIONS, this.representation.id)
+        await fs.mkdir(dirName, {recursive: true})
         for(const file of REPRESENTATION_FILES) {
-            const filePath = path.join(dirName, file);
+            const filePath = path.join(dirName, file)
             try {
-                await fs.stat(filePath);
-                Log.info(` - Not creating ${file} template for representation ${this.representation.id}, file already exists`);
+                await fs.stat(filePath)
+                Log.info(` - Not creating ${file} template for representation ${this.representation.id}, file already exists`)
             } catch {
                 const fileWidth = file.match(/portrait/) 
                     ? this.representation.large.width
-                    : this.representation.large.height;
+                    : this.representation.large.height
                 const fileHeight = file.match(/portrait/) 
                     ? this.representation.large.height
-                    : this.representation.large.width;
-                Log.debug(` - Creating template file with ${fileWidth}x${fileHeight}...`);
+                    : this.representation.large.width
+                Log.debug(` - Creating template file with ${fileWidth}x${fileHeight}...`)
 
                 const data = stringify(
                     this.createTemplateFile(fileWidth, fileHeight)
-                );
-                await fs.writeFile(filePath, data);
+                )
+                await fs.writeFile(filePath, data)
             }
         }
-        Log.info(`Created template for ${this.representation.id} at ${dirName}`);
+        Log.info(`Created template for ${this.representation.id} at ${dirName}`)
     }
 
     createTemplateFile(width: number, height: number): INode {
@@ -117,6 +117,6 @@ export class Template {
                     ],
                 },
             ],
-        };
+        }
     }
 }
