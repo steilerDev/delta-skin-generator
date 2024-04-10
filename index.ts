@@ -1,4 +1,4 @@
-#!/usr/bin/env npx ts-node
+#!/usr/bin/env node
 import meow from 'meow';
 import path from 'path';
 import { Canvas } from "./lib/canvas.js";
@@ -66,3 +66,4 @@ if(cli.flags.init) {
 
 const canvas = await Canvas.create(`data/canvas.svg`, projectDir);
 await canvas.render();
+debugger;

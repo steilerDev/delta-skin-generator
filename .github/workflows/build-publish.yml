@@ -1,0 +1,27 @@
+name: Build & Publish
+
+on:
+    push:
+      branches:
+        - main
+
+jobs:
+  publish-dockerhub:
+    name: Build & Publish project to npm
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: setup/app
+      shell: bash
+      run: npm ci
+    - name: build/app
+      shell: bash
+      run: npm run build
+    - name: release/app
+      uses: cycjimmy/semantic-release-action@v4
+      with:
+        dry_run: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
