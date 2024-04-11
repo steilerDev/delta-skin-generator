@@ -2,11 +2,12 @@
 
 This tool defines a component based framework for creating emulator Skins in the `.deltaskins` format (supported by [Delta](https://github.com/rileytestut/Delta) and [Ignited](https://github.com/LitRitt/Ignited)). These skins can be designed in a standard vector editor and by providing annotations to the source can be transformed into skins.
 
-Development is still ongoing - this tool is not working yet!
+> [!CAUTION]
+> Development is still ongoing - this tool is not working yet!
 
 <p align="center">
   <a href="https://dsg.steiler.dev/">
-    <img style="max-width: 20%;" alt="Delta-Skin-Generator Logo" src="https://dsg.steiler.dev/_media/SkinLogo.svg">
+    <img style="width: 16em;" alt="Delta-Skin-Generator Logo" src="https://dsg.steiler.dev/_media/SkinLogo.svg">
   </a>
 </p>
 
