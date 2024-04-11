@@ -1,4 +1,4 @@
-import { DIR_REPRESENTATIONS, Representation, REPRESENTATION_FILES } from "./constants.js"
+import { DIR_REPRESENTATIONS, OrientationString, Representation, REPRESENTATION_FILES } from "./constants.js"
 import fs from 'fs/promises'
 import path from 'path'
 import {INode, stringify} from 'svgson'
@@ -7,17 +7,21 @@ import { Log } from "./log.js"
 export class Template {
     projectDir: string
     representation: Representation
+    orientations: OrientationString[]
+    enableAltSkin: boolean
 
-    static async create(projectDir: string, representations: Representation[]) {
+    static async create(projectDir: string, representations: Representation[], orientations: OrientationString[], enableAltSkin: boolean) {
         for(const representation of representations) {
-            const template = new Template(projectDir, representation)
+            const template = new Template(projectDir, representation, orientations, enableAltSkin)
             await template.writeTemplate()
         }
     }
 
-    constructor(projectDir: string, representation: Representation) {
+    constructor(projectDir: string, representation: Representation, orientations: OrientationString[], enableAltSkin: boolean) {
         this.projectDir = projectDir
         this.representation = representation
+        this.orientations = orientations
+        this.enableAltSkin = enableAltSkin
     }
 
     async writeTemplate() {

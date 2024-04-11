@@ -2,7 +2,9 @@
 
 const UNKNOWN = -1
 
+export type CLICommands = 'render' | "init"
 export type RepresentationString = `all` | `iphone` | `iphone-standard` | `iphone-e2e` | `ipad` | `ipad-standard` | `ipad-splitview`
+export type OrientationString = "all" | 'portrait' | "landscape"
 
 type RepresentationResolution = {
     width: number,
@@ -80,6 +82,26 @@ export const REPRESENTATIONS = {
             }
         }
     }
+}
+
+export const orientationStringToRepresentation = (strings: OrientationString[]) => {
+    const relevantOrientations = new Set<OrientationString>()
+    for(const orientation of strings) {
+        switch(orientation) {
+        default:
+        case "all":
+            relevantOrientations.add("portrait")
+            relevantOrientations.add('landscape')
+            break;
+        case "landscape":
+            relevantOrientations.add('landscape')
+            break;
+        case "portrait":
+            relevantOrientations.add("portrait")
+            break;
+        }
+    }
+    return Array.from(relevantOrientations)
 }
 
 export const representationStringsToRepresentations = (strings: RepresentationString[]) => {
