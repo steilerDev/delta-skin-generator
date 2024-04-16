@@ -65,6 +65,11 @@ export class Template {
                         value: `com.rileytestut.delta.game.genesis`
                     }
                 ]
+            },{
+                type: 'input',
+                name: 'version',
+                message: 'Please enter the version of your skin',
+                default: '1.0.0'
             }])
 
             await fs.writeFile(projectFilePath, JSON.stringify(generalInformation, null, 2), {flag: `wx`})
