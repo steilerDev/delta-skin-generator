@@ -15,6 +15,12 @@ if(opts.command === `init`) {
     process.exit(0)
 }
 
+if(opts.command === `docs`) {
+    Log.info(`Creating documentation for ${opts.projectDir}...`)
+    Log.error(`Documentation creation is not yet implemented`)
+    process.exit(1)
+}
+
 if(opts.command === `render`) {
     const skin = await Skin.loadProject(opts)
     if(!(await skin.create(opts.outputDir))) {
@@ -25,4 +31,5 @@ if(opts.command === `render`) {
     process.exit(0)
 }
 
+Log.error(`Unknown command: ${opts.command}`)
 process.exit(99)
