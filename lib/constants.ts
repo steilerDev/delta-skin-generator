@@ -1,152 +1,114 @@
-// From: https://noah978.gitbook.io/delta-docs/skins#changing-the-images
+import path from "path"
+import { Annotation } from "./annotation.js"
 
-const UNKNOWN = -1
 
-export type CLICommands = 'render' | "init"
-export type RepresentationString = `all` | `iphone` | `iphone-standard` | `iphone-e2e` | `ipad` | `ipad-standard` | `ipad-splitview`
-export type OrientationString = "all" | 'portrait' | "landscape"
+/**
+ * Types defined within library
+ */
+type RepresentationString = `iphone-standard` | `iphone-e2e` | `ipad-standard` | `ipad-splitview`
+export type OrientationString = `portrait` | `landscape`
 
 type RepresentationResolution = {
     width: number,
     height: number
 }
+
 export type Representation = {
     id: RepresentationString,
-    small: RepresentationResolution,
-    medium: RepresentationResolution
-    large: RepresentationResolution
+    resolution: RepresentationResolution, // simply generate largest possible screen, as down-sampling will happen automatically
+    mappingSize: RepresentationResolution
 }
 
+// https://iosref.com/res
+// From: https://noah978.gitbook.io/delta-docs/skins#changing-the-images
+/**
+ * Possible representations and their sizes
+ */
 export const REPRESENTATIONS = {
-    iPhone: {
-        standard: {
-            id: `iphone-standard` as RepresentationString,
-            small: {
-                width: 640,
-                height: 1136
-            },
-            medium: {
-                width: 750,
-                height: 1334
-            },
-            large: {
-                width: 1080,
-                height: 1920
-            }
+    "iphone-standard": {
+        id: `iphone-standard` as RepresentationString,
+        resolution: { // largest non-notch resolution (iPhone 8+)
+            width: 1242,
+            height: 2208
         },
-        edgeToEdge: {
-            id: `iphone-e2e` as RepresentationString,
-            small: {
-                width: 828,
-                height: 1792
-            },
-            medium: {
-                width: 1125,
-                height: 2436
-            },
-            large: {
-                width: 1242,
-                height: 2688
-            }
+        mappingSize: {
+            width: 414,
+            height: 736
         }
     },
-    iPad: {
-        standard: {
-            id: `ipad-standard` as RepresentationString,
-            small: {
-                width: UNKNOWN,
-                height: UNKNOWN
-            },
-            medium: {
-                width: UNKNOWN,
-                height: UNKNOWN
-            },
-            large: {
-                width: 2048,
-                height: 2732
-            }
+    "iphone-e2e": {
+        id: `iphone-e2e` as RepresentationString,
+        resolution: { // largest notch resolution (iPhone 15 Plus)
+            width: 1290,
+            height: 2796
         },
-        splitView: {
-            id: `ipad-splitview` as RepresentationString,
-            small: {
-                width: UNKNOWN,
-                height: UNKNOWN
-            },
-            medium: {
-                width: UNKNOWN,
-                height: UNKNOWN
-            },
-            large: {
-                width: UNKNOWN,
-                height: UNKNOWN
-            }
+        mappingSize: { // Logical resolution (iPhone 15 Plus)
+            width: 430,
+            height: 932	
+        }
+    },
+    "ipad-standard": {
+        id: `ipad-standard` as RepresentationString,
+        resolution: { // largest iPad resolution (iPad Pro 12.9")
+            width: 2048,
+            height: 2732
+        },
+        mappingSize: {
+            width: 1024,
+            height: 1366
+        }
+    },
+    "ipad-splitview": {
+        id: `ipad-splitview` as RepresentationString,
+        resolution: { // based on recommendation here https://noah978.gitbook.io/delta-docs/skins#mapping-size, equivalent to iPad (gen 6, 5)
+            width: 1536,
+            height: 2048
+        },
+        mappingSize: {
+            width: 768,
+            height: 1024
         }
     }
 }
 
-export const orientationStringToRepresentation = (strings: OrientationString[]) => {
-    const relevantOrientations = new Set<OrientationString>()
-    for(const orientation of strings) {
-        switch(orientation) {
-        default:
-        case "all":
-            relevantOrientations.add("portrait")
-            relevantOrientations.add('landscape')
-            break;
-        case "landscape":
-            relevantOrientations.add('landscape')
-            break;
-        case "portrait":
-            relevantOrientations.add("portrait")
-            break;
-        }
-    }
-    return Array.from(relevantOrientations)
-}
-
-export const representationStringsToRepresentations = (strings: RepresentationString[]) => {
-    const relevantRepresentations = new Set<Representation>()
-    for(const representation of strings) {
-        switch(representation) {
-        default:
-        case `all`:
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.standard)
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.edgeToEdge)
-            relevantRepresentations.add(REPRESENTATIONS.iPad.splitView)
-            relevantRepresentations.add(REPRESENTATIONS.iPad.standard)
-            break
-        case `iphone`:
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.standard)
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.edgeToEdge)
-            break
-        case `iphone-standard`:
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.standard)
-            break
-        case `iphone-e2e`:
-            relevantRepresentations.add(REPRESENTATIONS.iPhone.edgeToEdge)
-            break
-        case `ipad`:
-            relevantRepresentations.add(REPRESENTATIONS.iPad.splitView)
-            relevantRepresentations.add(REPRESENTATIONS.iPad.standard)
-            break
-        case `ipad-standard`:
-            relevantRepresentations.add(REPRESENTATIONS.iPad.standard)
-            break
-        case `ipad-splitview`:
-            relevantRepresentations.add(REPRESENTATIONS.iPad.splitView)
-            break
-        }
-    }
-    return Array.from(relevantRepresentations)
-}
-
-export const REPRESENTATION_FILES = [
-    `portrait.svg`,
-    `portrait-alt.svg`,
-    `landscape.svg`,
-    `landscape-alt.svg`
-]
 
 export const DIR_REPRESENTATIONS = `representations`
 export const DIR_COMPONENTS = `components`
+const FILE_COMPONENTS_EXT = `.svg`
+const FILE_CANVAS_EXT = `.svg`
 export const DIR_ELEMENTS = `elements`
+const FILE_ELEMENTS_EXT = `.json`
+export const FILE_PROJECT = `skin.json`
+const FILE_REPRESENTATION_OUTPUT_EXT = `.png`
+export const FILE_PROJECT_OUTPUT = `config.json`
+
+/**
+ * @returns The path on the filesystem for representation SVG
+ */
+export const canvasFilePath = (projectDir: string, representation: RepresentationString, orientation: OrientationString, altSkin: boolean) => {
+    return path.join(projectDir, DIR_REPRESENTATIONS, representation, orientation + (altSkin ? `-alt` : ``) + FILE_CANVAS_EXT)
+}
+
+/**
+ * @returns  The filepath within the SkinPack for the specified asset
+ */
+export const skinPackFilePath = (representation: RepresentationString, orientation: OrientationString, altSkin: boolean) => {
+    return `${representation}_${orientation}${altSkin ? `_alt` : ``}${FILE_REPRESENTATION_OUTPUT_EXT}`
+}
+
+/**
+ * @returns The path on the filesystem for the component svg
+ */
+export const componentFilePath = (projectDir: string, componentAnnotation: Annotation<`@component`>) => {
+    return path.join(projectDir, DIR_COMPONENTS, componentAnnotation.value + FILE_COMPONENTS_EXT)
+}
+
+/**
+ * @returns The path on the filesystem for the configuration of the provided annotation, or undefined if none is defined
+ */
+export const elementConfigFilePath = (projectDir: string, elementAnnotation: Annotation<`@element`>) => {
+    if(!elementAnnotation.subValue) {
+        return undefined
+    }
+    return path.join(projectDir, DIR_ELEMENTS, elementAnnotation.subValue + FILE_ELEMENTS_EXT)
+}

@@ -14,8 +14,8 @@
 - AltSkin support
 
 [GitHub](https://github.com/steilerdev/delta-skin-generator)
-[Get Started Guide](guide.md)
 [Documentation](#delta-skin-generator)
+[Get Started Guide](guide.md)
 
 <!-- background color -->
 

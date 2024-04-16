@@ -20,6 +20,10 @@ else
 }
 ```
 
+-> iPhone .small = iPhone 3GS, iPhone 4 (320 × 480), iPhone SE Gen. 1 (320 × 568) = 640 × 1136
+-. iPhone .medium = iPhone SE 2 (375 × 667) = 750 × 1334
+-> iPhone .large = 
+
 [Traits determined by](https://github.com/LitRitt/DeltaCore/blob/e4062dd9fe4c4f9c25d160cf4c35a4afde7fe385/DeltaCore/Model/ControllerSkinTraits.swift#L60)
 ```
 if let scene = window.windowScene, scene.session.role == .windowExternalDisplay

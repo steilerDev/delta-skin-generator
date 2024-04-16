@@ -4,13 +4,17 @@ import { JSONPath } from 'jsonpath-plus'
 import { Annotation, AnnotationString } from './annotation.js'
 import sharp from 'sharp'
 
-
 export class SVG {
     data: INode
 
     static async load(path: string): Promise<SVG> {
         return fs.readFile(path)
             .then((data) => parse(data.toString()))
+            .then((parsedData) => new SVG(parsedData))
+    }
+
+    static async copy(svgData: SVG): Promise<SVG> {
+        return parse(stringify(svgData.data))
             .then((parsedData) => new SVG(parsedData))
     }
 
@@ -31,7 +35,6 @@ export class SVG {
         } as INode
     }
 
-    
     constructor(data: INode) {
         this.data = data
     }

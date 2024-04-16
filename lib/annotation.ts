@@ -25,14 +25,14 @@ export class Annotation<T extends AnnotationString> {
     }
 
     toString(): string {
-        return this.value
+        return this.value + this.subValue
     }
 
     get value(): string {
         return this.match[1]
     }
 
-    get subValue(): string {
+    get subValue(): string | undefined {
         return this.match[2]
     }
 

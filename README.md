@@ -36,3 +36,17 @@ This tool defines a component based framework for creating emulator Skins in the
 - Annotate your file to define emulator elements - no more coordinate calculations and translations!
 - Generate a `.deltaskins` file that can be used with Delta and Ignited
 - Support for alt skins
+
+## Discord
+
+Join the [Ignited Discord Server](https://discord.gg/SKbs24Sg) to discuss this tool and skins in general.
+
+## Acknowledgements
+
+- Logo based on 
+  - iPhone by Bohdan Burmich from <a href="https://thenounproject.com/browse/icons/term/iphone/" target="_blank" title="iPhone Icons">Noun Project</a> (CC BY 3.0)
+  - Controller by Komkrit Noenpoempisut from <a href="https://thenounproject.com/browse/icons/term/controller/" target="_blank" title="Controller Icons">Noun Project</a> (CC BY 3.0)
+  - Game Boy Advance SP by O R I M Λ T from <a href="https://thenounproject.com/browse/icons/term/game-boy-advance-sp/" target="_blank" title="Game Boy Advance SP Icons">Noun Project</a> (CC BY 3.0)
+- iDevice resolutions based on [iOS Ref database](https://iosref.com/res)
+- Skin making guide from noah978's [Delta Docs](https://noah978.gitbook.io/delta-docs/skins)
+
