@@ -7,7 +7,7 @@ This guide will help you create a deltaskin file that can be used with the Delta
 Please make sure you have a recent (and supported) version of node and npm installed. From your empty project directory, run the following command to initialize a new project:
     
 ```bash
-npx delta-skin-generator init
+npx delta-skin-generator@latest init
 ```
 
 You can reduce the scope of your skin by supplying the filter arguments [`--representations`, `--orientations` and/or `--altSkin`](api.md#cli).
@@ -21,13 +21,13 @@ The `init` command will ask for some properties of your skin to populate the [`s
 
 ## Creating a representation
 
-1. Open any of the created template representations form the `representations` folder in your vector editor of choice. For this tutorial I'll be using [Inkscape](https://inkscape.org/), as it is free and the annotations are based on its capabilities. However if you have better ideas on how to annotate, I'd be happy to consider alternative approaches.
+1. Open any of the created template representations form the `representations` folder in your vector editor of choice. For this tutorial I'll be using [Inkscape](https://inkscape.org/), as it is free and the annotation specifications are based on its capabilities. However if you have better ideas on how to annotate, I'd be happy to consider alternative approaches.
 2. The template already contains a rectangle. Go into the "Object Properties" and see the annotations:
 
 3. We can now add additional elements that will represent the skin. For that add rectangles and add annotations in the description field - don't forget to "Set" the properties in the bottom right corner.
 4. To compile the skin into a `.deltaskins` file, run the following command:
 ```bash
-npx delta-skin-generator
+npx delta-skin-generator@latest
 ```
 5. Transfer the generated file onto your device and [load your skin](https://docs.ignitedemulator.com/using-ignited/settings/controller-skins).
 6. In the emulator's pause screen, you can enable keyboard debugging to see the active areas.

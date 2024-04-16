@@ -5,6 +5,7 @@ import {INode, stringify} from 'svgson'
 import { Log } from "./log.js"
 import inquirer from "inquirer"
 import { CLIArgs } from "./cli.js"
+import { fileExists } from "./helper.js"
 
 export class Template {
     projectDir: string
@@ -20,7 +21,7 @@ export class Template {
 
             const projectFilePath = path.join(args.projectDir, FILE_PROJECT)
 
-            if(fs.stat(projectFilePath).then(() => true).catch(() => false)) {
+            if(await fileExists(projectFilePath)) {
                 Log.warn(`Skin configuration file already exists at ${projectFilePath} - not overwriting`)
                 return
             }
@@ -92,7 +93,8 @@ export class Template {
             const filePath = canvasFilePath(this.projectDir, this.representation.id, orientation, false)
             const altFilePath = this.enableAltSkin ? canvasFilePath(this.projectDir, this.representation.id, orientation, true) : undefined
 
-            if(fs.stat(filePath).then(() => true).catch(() => false)) {
+            
+            if(await fileExists(filePath) || (altFilePath && await fileExists(altFilePath))) {
                 Log.warn(` - Not creating ${this.representation} (${this.orientations}) template, file already exists`)
                 continue
             }
