@@ -22,8 +22,7 @@ export class Template {
             const projectFilePath = path.join(args.projectDir, FILE_PROJECT)
 
             if(await fileExists(projectFilePath)) {
-                Log.warn(`Skin configuration file already exists at ${projectFilePath} - not overwriting`)
-                return
+                throw new Error(`Skin configuration file already exists at ${projectFilePath}`)
             }
 
             const generalInformation = await inquirer.prompt([{
@@ -33,7 +32,7 @@ export class Template {
             },{
                 type: `input`,
                 name: `skinId`,
-                message: `Please enter an identifier for your skin (e.g.: 'com.delta.n64.standard')`
+                message: `Please enter an identifier for your skin (e.g.: 'com.you.yourSkin')`
             },{
                 type: `input`,
                 name: `author`,
@@ -99,7 +98,7 @@ export class Template {
                 continue
             }
 
-            const fileWidth = orientation === `landscape`
+            const fileWidth = orientation === `portrait`
                 ? this.representation.resolution.width
                 : this.representation.resolution.height
             const fileHeight = orientation === `portrait`
@@ -164,7 +163,7 @@ export class Template {
                                 height: (height/2).toString(),
                                 x: (width/4).toString(),
                                 y: (height/4).toString(),
-                                style: `fill:none;stroke:none`
+                                style: `fill:#000000;stroke:none`
                             },
                             children: [
                                 {
