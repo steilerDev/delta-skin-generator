@@ -25,6 +25,9 @@ export class Annotation<T extends AnnotationString> {
     }
 
     toString(): string {
+        if(this.subValue !== undefined) {
+            return this.value + `/` + this.subValue
+        }
         return this.value
     }
 
@@ -32,7 +35,7 @@ export class Annotation<T extends AnnotationString> {
         return this.match[1]
     }
 
-    get subValue(): string {
+    get subValue(): string | undefined {
         return this.match[2]
     }
 

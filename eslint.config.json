@@ -20,6 +20,7 @@
         "indent": ["error", 4],
         "linebreak-style": ["error", "unix"],
         "quotes": ["error", "backtick"],
+        "quote-props": ["error", "as-needed", {"unnecessary": false}],
         "semi": ["error", "never"],
         "eol-last": ["error", "never"]
     }

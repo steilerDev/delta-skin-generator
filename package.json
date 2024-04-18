@@ -1,7 +1,7 @@
 {
   "name": "delta-skin-generator",
   "version": "0.0.0-development",
-  "description": "Component based emulator skin creation for deltaskins, with support for altSkins",
+  "description": "Component based emulator skin creation for deltaskin, with support for altSkins",
   "author": "steilerDev",
   "repository": {
     "type": "git",
@@ -19,14 +19,23 @@
     "build:knip": "npx knip --config knip.config.jsonc",
     "build:typescript": "npx tsc",
     "build": "npm run build:lint && npm run build:knip && npm run build:typescript",
-    "execute": "node dist/index.js"
+    "execute": "node dist/index.js",
+    "docs": "npx docsify serve docs"
   },
   "release": {
     "branches": [
-      "main"
+      "main",
+      {
+        "name": "dev",
+        "prerelease": true
+      }
     ]
   },
   "dependencies": {
+    "@types/adm-zip": "^0.5.5",
+    "@types/inquirer": "^9.0.7",
+    "adm-zip": "^0.5.12",
+    "inquirer": "^9.2.17",
     "jsonpath-plus": "^8.1.0",
     "jsonpointer": "^5.0.1",
     "meow": "^13.2.0",
@@ -36,6 +45,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.6.0",
     "@typescript-eslint/parser": "^7.6.0",
+    "docsify-cli": "^4.4.4",
     "eslint": "^8.51.0",
     "knip": "^5.9.3",
     "ts-node": "^10.9.2",
