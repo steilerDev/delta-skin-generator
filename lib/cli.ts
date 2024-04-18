@@ -1,7 +1,7 @@
 import meow from "meow"
 import { Log } from "./log.js"
 import path from 'path'
-import { OrientationString, Representation, REPRESENTATIONS } from "./constants.js"
+import { OrientationString, Representation, RepresentationString } from "./representation.js"
 
 /**
  * Types required for running CLI app
@@ -14,9 +14,7 @@ export type CLIArgs = {
     command: CLICommands,
     projectDir: string,
     outputDir: string
-    relevantOrientations: OrientationString[],
-    relevantRepresentations: Representation[],
-    altSkin: boolean
+    representations: Representation[],
 }
 
 /**
@@ -100,11 +98,7 @@ export const parseCLI = () => {
         ? getAbsolutePath(cli.flags.outputDir)
         : path.join(parsedArgs.projectDir, `dist`)
 
-    
-    parsedArgs.relevantRepresentations = representationStringsToRepresentations(cli.flags.representations as CLIRepresentationString[])
-    parsedArgs.relevantOrientations = orientationStringToRepresentation(cli.flags.orientations as CLIOrientationString[])
-
-    parsedArgs.altSkin = !cli.flags.disableAltSkin
+    parsedArgs.representations = cliToRepresentations(cli.flags.representations as CLIRepresentationString[], cli.flags.orientations as CLIOrientationString[], cli.flags.disableAltSkin)
 
     return parsedArgs
 }
@@ -124,7 +118,7 @@ const getAbsolutePath = (pathString: string) => {
 /**
  * Helper function to convert CLI options (orientation) into library types
  */
-const orientationStringToRepresentation = (strings: CLIOrientationString[]) => {
+const cliOrientationStringsToOrientationStrings = (strings: CLIOrientationString[]) => {
     const relevantOrientations = new Set<OrientationString>()
     for(const orientation of strings) {
         switch(orientation) {
@@ -143,34 +137,54 @@ const orientationStringToRepresentation = (strings: CLIOrientationString[]) => {
 }
 
 /**
- * Helper function to convert CLI options (representations) into library types
+ * Helper function to convert CLI options (representation) into library types
  */
-const representationStringsToRepresentations = (strings: CLIRepresentationString[]) => {
-    const relevantRepresentations = new Set<Representation>()
+const cliRepresentationStringsToRepresentationStrings = (strings: CLIRepresentationString[]) => {
+    const relevantRepresentations = new Set<RepresentationString>()
     for(const representation of strings) {
         switch(representation) {
         case `all`:
-            relevantRepresentations.add(REPRESENTATIONS[`iphone-standard`])
-            relevantRepresentations.add(REPRESENTATIONS[`iphone-e2e`])
-            relevantRepresentations.add(REPRESENTATIONS[`ipad-standard`])
-            relevantRepresentations.add(REPRESENTATIONS[`ipad-splitview`])
+            relevantRepresentations.add(`ipad-splitview`)
+            relevantRepresentations.add(`ipad-standard`)
+            relevantRepresentations.add(`iphone-standard`)
+            relevantRepresentations.add(`iphone-e2e`)
             break
         case `iphone`:
-            relevantRepresentations.add(REPRESENTATIONS[`iphone-standard`])
-            relevantRepresentations.add(REPRESENTATIONS[`iphone-e2e`])
+            relevantRepresentations.add(`iphone-standard`)
+            relevantRepresentations.add(`iphone-e2e`)
             break
         case `ipad`:
-            relevantRepresentations.add(REPRESENTATIONS[`ipad-standard`])
-            relevantRepresentations.add(REPRESENTATIONS[`ipad-splitview`])
+            relevantRepresentations.add(`ipad-splitview`)
+            relevantRepresentations.add(`ipad-standard`)
             break
+        default:
         case `iphone-standard`:
         case `iphone-e2e`:
         case `ipad-standard`:
         case `ipad-splitview`:
-        default:
-            relevantRepresentations.add(REPRESENTATIONS[representation])
+            relevantRepresentations.add(representation)
             break
         }
     }
     return Array.from(relevantRepresentations)
+}
+
+/**
+ * Helper function to convert CLI options into library type
+ */
+const cliToRepresentations = (representationStrings: CLIRepresentationString[], orientationStrings: CLIOrientationString[], disableAltSkin: boolean) => {
+    const relevantRepresentationStrings = cliRepresentationStringsToRepresentationStrings(representationStrings)
+    const relevantOrientationStrings = cliOrientationStringsToOrientationStrings(orientationStrings)
+
+    const representations: Representation[] = []
+
+    for(const relevantRepresentationString of relevantRepresentationStrings) {
+        for(const relevantOrientationString of relevantOrientationStrings) {
+            representations.push(new Representation(relevantRepresentationString, relevantOrientationString, false))
+            if(!disableAltSkin) {
+                representations.push(new Representation(relevantRepresentationString, relevantOrientationString, true))
+            }
+        }
+    }
+    return representations
 }

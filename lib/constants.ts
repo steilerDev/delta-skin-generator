@@ -1,27 +1,15 @@
 import path from "path"
 import { Annotation } from "./annotation.js"
+import { Representation, RepresentationString } from "./representation.js"
 
 /**
  * Types defined within library
  */
-type RepresentationString = `iphone-standard` | `iphone-e2e` | `ipad-standard` | `ipad-splitview`
-export type OrientationString = `portrait` | `landscape`
 
-export type RepresentationResolution = {
-    width: number,
-    height: number
-}
-
-export type Representation = {
-    id: RepresentationString,
-    resolution: RepresentationResolution, // simply generate largest possible screen, as down-sampling will happen automatically
-    mappingSize: RepresentationResolution
-}
-
-// https://iosref.com/res
-// From: https://noah978.gitbook.io/delta-docs/skins#changing-the-images
 /**
  * Possible representations and their sizes
+ * https://iosref.com/res
+ * From: https://noah978.gitbook.io/delta-docs/skins#changing-the-images
  */
 export const REPRESENTATIONS = {
     "iphone-standard": {
@@ -43,7 +31,7 @@ export const REPRESENTATIONS = {
         },
         mappingSize: { // Logical resolution (iPhone 15 Plus)
             width: 430,
-            height: 932	
+            height: 932
         }
     },
     "ipad-standard": {
@@ -114,15 +102,15 @@ export const FILE_SKIN_EXT = `.deltaskin`
 /**
  * @returns The path on the filesystem for representation SVG
  */
-export const canvasFilePath = (projectDir: string, representation: RepresentationString, orientation: OrientationString, altSkin: boolean) => {
-    return path.join(projectDir, DIR_REPRESENTATIONS, representation, orientation + (altSkin ? `-alt` : ``) + FILE_CANVAS_EXT)
+export const canvasFilePath = (projectDir: string, representation: Representation) => {
+    return path.join(projectDir, DIR_REPRESENTATIONS, representation.id, representation.orientation + (representation.altSkin ? `-alt` : ``) + FILE_CANVAS_EXT)
 }
 
 /**
  * @returns  The filepath within the SkinPack for the specified asset
  */
-export const skinPackFilePath = (representation: RepresentationString, orientation: OrientationString, altSkin: boolean) => {
-    return `${representation}_${orientation}${altSkin ? `_alt` : ``}${FILE_REPRESENTATION_OUTPUT_EXT}`
+export const skinPackFilePath = (representation: Representation) => {
+    return `${representation.id}_${representation.orientation}${representation.altSkin ? `_alt` : ``}${FILE_REPRESENTATION_OUTPUT_EXT}`
 }
 
 /**

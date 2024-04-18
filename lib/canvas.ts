@@ -1,13 +1,14 @@
 import AdmZip from "adm-zip"
 import { Annotation } from "./annotation.js"
 import { Component } from "./component.js"
-import { OrientationString, canvasFilePath, Representation, skinPackFilePath } from "./constants.js"
+import { canvasFilePath, skinPackFilePath } from "./constants.js"
 import { Log } from "./log.js"
 import { SVG } from "./svg.js"
 import { Element } from "./elements.js"
 import { GameTypeIdentifier, SkinConfiguration } from "./skin.js"
 import JSONPointer from "jsonpointer"
 import { JSONPath } from "jsonpath-plus"
+import { Representation } from "./representation.js"
 
 /**
  * The Canvas class contains one representation, with all assets and configurations
@@ -15,8 +16,6 @@ import { JSONPath } from "jsonpath-plus"
 export class Canvas {
     projectPath: string
     representation: Representation
-    orientation: OrientationString
-    altSkin: boolean
     system: GameTypeIdentifier
     canvas: SVG
     components: Component[] = []
@@ -28,12 +27,12 @@ export class Canvas {
      * @param projectPath 
      * @returns 
      */
-    static async create(projectPath: string, representation: Representation, orientation: OrientationString, altSkin: boolean, system: GameTypeIdentifier): Promise<Canvas> {
-        Log.debug(`Creating canvas for ${representation} (${orientation})${altSkin ? `as AltSkin` : ``}`)
+    static async create(projectPath: string, representation: Representation, system: GameTypeIdentifier): Promise<Canvas> {
+        Log.debug(`Creating canvas for ${representation}`)
         const canvasData = await SVG.load(
-            canvasFilePath(projectPath, representation.id, orientation, altSkin)
+            canvasFilePath(projectPath, representation)
         )
-        const canvas = new Canvas(canvasData, projectPath, representation, orientation, altSkin, system)
+        const canvas = new Canvas(canvasData, projectPath, representation, system)
 
         const componentAnnotations = canvasData.findAnnotations(`@component`)
         Log.info(`Found ${componentAnnotations.length} component annotations`)
@@ -56,13 +55,11 @@ export class Canvas {
         return canvas
     }
 
-    constructor(canvas: SVG, projectPath: string, representation: Representation, orientation: OrientationString, altSkin: boolean, system: GameTypeIdentifier) {
+    constructor(canvas: SVG, projectPath: string, representation: Representation, system: GameTypeIdentifier) {
         this.canvas = canvas
         this.projectPath = projectPath
-        this.representation = representation
-        this.orientation = orientation
-        this.altSkin = altSkin
         this.system = system
+        this.representation = representation
     }
 
     /**
@@ -86,7 +83,7 @@ export class Canvas {
      */
     public async packRenderedCanvas(skinPack: AdmZip) {
         skinPack.addFile(
-            skinPackFilePath(this.representation.id, this.orientation, this.altSkin), 
+            skinPackFilePath(this.representation), 
             await this.render()
         )
     }
@@ -98,19 +95,20 @@ export class Canvas {
         // create JSON path for representation.id and orientation
         const representationConfig = {
             assets: {
-                small: skinPackFilePath(this.representation.id, this.orientation, this.altSkin),
-                medium: skinPackFilePath(this.representation.id, this.orientation, this.altSkin),
-                large: skinPackFilePath(this.representation.id, this.orientation, this.altSkin)
+                small: skinPackFilePath(this.representation),
+                medium: skinPackFilePath(this.representation),
+                large: skinPackFilePath(this.representation)
             },
-            items: this.elements.filter(element => element.kind === `item`).map(element => element.generate()).filter(item => item !== undefined),
-            screens: this.elements.filter(element => element.kind === `screen`).map(element => element.generate()).filter(screen => screen !== undefined),
+            items: this.elements.filter(element => element.kind === `item`).map(element => element.generate(this.representation)).filter(item => item !== undefined),
+            screens: this.elements.filter(element => element.kind === `screen`).map(element => element.generate(this.representation)).filter(screen => screen !== undefined),
             mappingSize: this.representation.mappingSize,
             //"extendedEdges" : {...},
             // translucent: boolean
         }
 
+        // Path to representation in config file
         const representationPath: string[] = [`$`]
-        this.altSkin ? representationPath.push(`altRepresentations`) : representationPath.push(`representations`)
+        this.representation.altSkin ? representationPath.push(`altRepresentations`) : representationPath.push(`representations`)
         switch(this.representation.id) {
         case `iphone-standard`:
             representationPath.push(`iphone`)
@@ -129,42 +127,26 @@ export class Canvas {
             representationPath.push(`splitView`)
             break
         }
-        switch(this.orientation) {
-        case `portrait`:
-            representationPath.push(`portrait`)
-            break
-        case `landscape`:
-            representationPath.push(`landscape`)
-            break
-        }
+
+        representationPath.push(this.representation.orientation)
 
         Log.debug(`Setting ${JSONPath.toPointer(representationPath)} to ${JSON.stringify(representationConfig)}`)
         JSONPointer.set(config, JSONPath.toPointer(representationPath), representationConfig)
     }
-
-    // generateSkinConfigurationRepresentation(): SkinConfigurationRepresentation {
-    //     return {}
-    // }
 
     /**
      * Renders all components into the canvas and outputs a PNG file buffer
      */
     private async render(): Promise<Buffer> {
         const canvasCopy = await SVG.copy(this.canvas)
-
-        const renderWidth = this.orientation === `portrait`
-            ? this.representation.resolution.width
-            : this.representation.resolution.height
-
-        const renderHeight = this.orientation === `portrait`
-            ? this.representation.resolution.height
-            : this.representation.resolution.width
+        const renderWidth = this.representation.resolution.width
+        const renderHeight = this.representation.resolution.height
 
         if(renderWidth > canvasCopy.width || renderHeight > canvasCopy.height) {
-            Log.warn(`Up-scaling picture during render: ${JSON.stringify(this.representation)} (${this.orientation})`)
+            Log.warn(`Up-scaling picture during render: ${this.representation}`)
         }
 
-        Log.debug(` - Rendering ${this.representation.id} in resolution ${renderWidth} x ${renderHeight}`)
+        Log.debug(` - Rendering ${this.representation} in resolution ${renderWidth} x ${renderHeight}`)
 
         for(const component of this.components) {
             await component.render(canvasCopy)
@@ -174,6 +156,6 @@ export class Canvas {
     }
 
     toString(): string {
-        return `Canvas[${this.representation.id} (${this.orientation})${this.altSkin ? ` as altSkin` : ``}]`
+        return `Canvas[${this.representation}]`
     }
 }

@@ -130,36 +130,19 @@ export class Skin {
         Log.info(`Loading skin configuration from ${configPath}...`)
         const config = JSON.parse((await fs.readFile(configPath)).toString()) as SkinGeneratorConfigurationFile
         const canvas: Canvas[] = []
-        for(const representation of args.relevantRepresentations) {
-            for(const orientation of args.relevantOrientations) {
-                try {
-                    canvas.push(await Canvas.create(
-                        args.projectDir,
-                        representation,
-                        orientation,
-                        false,
-                        config.system
-                    ))
-                    Log.info(` - Loaded representation ${representation.id} with orientation ${orientation}`)
-                } catch (err) {
-                    Log.warn(` - Unable to load representation ${representation.id} with orientation ${orientation}: ${err.message}`)
-                }
-                if(args.altSkin) {
-                    try {
-                        canvas.push(await Canvas.create(
-                            args.projectDir,
-                            representation,
-                            orientation,
-                            true,
-                            config.system
-                        ))
-                        Log.info(` - Loaded alt representation ${representation.id} with orientation ${orientation}`)
-                    } catch (err) {
-                        Log.warn(` - Unable to load alt representation ${representation.id} with orientation ${orientation}: ${err.message}`)
-                    }
-                }
+        for(const representation of args.representations) {
+            try {
+                canvas.push(await Canvas.create(
+                    args.projectDir,
+                    representation,
+                    config.system
+                ))
+                Log.info(` - Loaded representation ${representation}`)
+            } catch (err) {
+                Log.warn(` - Unable to load representation ${representation}: ${err.message}`)
             }
         }
+        
         return new Skin(config, canvas)
     }
 

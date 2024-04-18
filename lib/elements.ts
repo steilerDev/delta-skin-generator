@@ -1,8 +1,9 @@
 import { Annotation } from "./annotation.js"
 import { Log } from "./log.js"
-import { elementConfigFilePath, RepresentationResolution, SCREEN_RESOLUTIONS} from "./constants.js"
+import { elementConfigFilePath, SCREEN_RESOLUTIONS} from "./constants.js"
 import fs from 'fs/promises'
 import { GameTypeIdentifier, SkinConfigurationInputs, SkinConfigurationItem, SkinConfigurationScreen } from "./skin.js"
+import { Representation, RepresentationResolution } from "./representation.js"
 
 type ElementKind = `item` | `screen`
 
@@ -153,17 +154,27 @@ export class Element {
      * This function will generate it's own generation and dimension, and insert itself accordingly
      * @param canvas 
      */
-    generate(): SkinConfigurationItem | SkinConfigurationScreen | undefined {
+    generate(representation: Representation): SkinConfigurationItem | SkinConfigurationScreen | undefined {
         try {
             this.validate()
         } catch(err) {
             Log.warn(`Problem found with element ${this.annotation}: ${err.message}`)
         }
 
-        const boundsWidth = Math.round(Number.parseFloat(this.annotation.parentNode.attributes.width)/3)
-        const boundsHeight = Math.round(Number.parseFloat(this.annotation.parentNode.attributes.height)/3)
-        const boundsX = Math.round(Number.parseFloat(this.annotation.parentNode.attributes.x)/3)
-        const boundsY = Math.round(Number.parseFloat(this.annotation.parentNode.attributes.y)/3)
+        const mappingMultiplier = representation.mappingSize.height / representation.resolution.height
+
+        const boundsWidth = Math.round(
+            Number.parseFloat(this.annotation.parentNode.attributes.width) * mappingMultiplier
+        )
+        const boundsHeight = Math.round(
+            Number.parseFloat(this.annotation.parentNode.attributes.height) * mappingMultiplier
+        )
+        const boundsX = Math.round(
+            Number.parseFloat(this.annotation.parentNode.attributes.x) * mappingMultiplier
+        )
+        const boundsY = Math.round(
+            Number.parseFloat(this.annotation.parentNode.attributes.y) * mappingMultiplier
+        )
 
         if(this.kind === `screen`) {
             switch(this.system) {

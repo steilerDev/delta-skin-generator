@@ -1,4 +1,4 @@
-import { DIR_REPRESENTATIONS, FILE_PROJECT, OrientationString, canvasFilePath, Representation, DIR_COMPONENTS, DIR_ELEMENTS } from "./constants.js"
+import { DIR_REPRESENTATIONS, FILE_PROJECT, canvasFilePath, DIR_COMPONENTS, DIR_ELEMENTS } from "./constants.js"
 import fs from 'fs/promises'
 import path from 'path'
 import {INode, stringify} from 'svgson'
@@ -6,12 +6,11 @@ import { Log } from "./log.js"
 import inquirer from "inquirer"
 import { CLIArgs } from "./cli.js"
 import { fileExists } from "./helper.js"
+import { Representation, RepresentationResolution } from "./representation.js"
 
 export class Template {
     projectDir: string
     representation: Representation
-    orientations: OrientationString[]
-    enableAltSkin: boolean
 
     static async create(args: CLIArgs) {
         try {
@@ -76,64 +75,49 @@ export class Template {
         } catch (err) {
             Log.warn(`Not generating '${FILE_PROJECT}': ${err.message}`)
         }
-        for(const representation of args.relevantRepresentations) {
-            const template = new Template(args.projectDir, representation, args.relevantOrientations, args.altSkin)
+        for(const representation of args.representations) {
+            const template = new Template(args.projectDir, representation)
             await template.writeTemplate()
         }
     }
 
-    constructor(projectDir: string, representation: Representation, orientations: OrientationString[], enableAltSkin: boolean) {
+    constructor(projectDir: string, representation: Representation) {
         this.projectDir = projectDir
         this.representation = representation
-        this.orientations = orientations
-        this.enableAltSkin = enableAltSkin
     }
 
     async writeTemplate() {
         Log.info(`Creating template for ${this.representation.id}...`)
         const dirName = path.join(this.projectDir, DIR_REPRESENTATIONS, this.representation.id)
         await fs.mkdir(dirName, {recursive: true})
-        for(const orientation of this.orientations) {
-            const filePath = canvasFilePath(this.projectDir, this.representation.id, orientation, false)
-            const altFilePath = this.enableAltSkin ? canvasFilePath(this.projectDir, this.representation.id, orientation, true) : undefined
 
-            
-            if(await fileExists(filePath) || (altFilePath && await fileExists(altFilePath))) {
-                Log.warn(` - Not creating ${this.representation} (${this.orientations}) template, file already exists`)
-                continue
-            }
-
-            const fileWidth = orientation === `portrait`
-                ? this.representation.resolution.width
-                : this.representation.resolution.height
-            const fileHeight = orientation === `portrait`
-                ? this.representation.resolution.height
-                : this.representation.resolution.width
-            Log.debug(` - Creating template file with ${fileWidth}x${fileHeight}...`)
-
-            const data = stringify(
-                this.createTemplateFile(fileWidth, fileHeight)
-            )
-            await fs.writeFile(filePath, data)
-            if(altFilePath) {
-                await fs.writeFile(altFilePath, data)
-            }
+        const filePath = canvasFilePath(this.projectDir, this.representation)
+        if(await fileExists(filePath)) {
+            Log.warn(` - Not creating ${this.representation} template, file already exists`)
+            return
         }
+
+        Log.debug(` - Creating template file with ${this.representation.resolution.width}x${this.representation.resolution.height}...`)
+
+        const data = stringify(
+            this.createTemplateFile(this.representation.resolution)
+        )
+        await fs.writeFile(filePath, data)
         Log.info(`Created template for ${this.representation.id} at ${dirName}`)
     }
 
     /**
      * @returns A template SVG file using the provided bounds
      */
-    createTemplateFile(width: number, height: number): INode {
+    createTemplateFile(resolution: RepresentationResolution): INode {
         return {
             name: `svg`,
             type: `element`,
             value: ``,
             attributes: {
-                width: width.toString(),
-                height: height.toString(),
-                viewBox: `0 0 ${width.toString()} ${height.toString()}`,
+                width: resolution.width.toString(),
+                height: resolution.height.toString(),
+                viewBox: `0 0 ${resolution.width.toString()} ${resolution.height.toString()}`,
                 version: `1.1`,
                 id: `svg1`,
                 xmlns: `http://www.w3.org/2000/svg`,
@@ -164,10 +148,10 @@ export class Template {
                             value: ``,
                             attributes: {
                                 id: `screen`,
-                                width: (width/2).toString(),
-                                height: (height/2).toString(),
-                                x: (width/4).toString(),
-                                y: (height/4).toString(),
+                                width: (resolution.width/2).toString(),
+                                height: (resolution.height/2).toString(),
+                                x: (resolution.width/4).toString(),
+                                y: (resolution.height/4).toString(),
                                 style: `fill:#000000;stroke:none`
                             },
                             children: [
