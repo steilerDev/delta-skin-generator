@@ -5,6 +5,9 @@ import { OrientationString, canvasFilePath, Representation, skinPackFilePath } f
 import { Log } from "./log.js"
 import { SVG } from "./svg.js"
 import { Element } from "./elements.js"
+import { GameTypeIdentifier, SkinConfiguration } from "./skin.js"
+import JSONPointer from "jsonpointer"
+import { JSONPath } from "jsonpath-plus"
 
 /**
  * The Canvas class contains one representation, with all assets and configurations
@@ -14,6 +17,7 @@ export class Canvas {
     representation: Representation
     orientation: OrientationString
     altSkin: boolean
+    system: GameTypeIdentifier
     canvas: SVG
     components: Component[] = []
     elements: Element[] = []
@@ -24,12 +28,12 @@ export class Canvas {
      * @param projectPath 
      * @returns 
      */
-    static async create(projectPath: string, representation: Representation, orientation: OrientationString, altSkin: boolean): Promise<Canvas> {
+    static async create(projectPath: string, representation: Representation, orientation: OrientationString, altSkin: boolean, system: GameTypeIdentifier): Promise<Canvas> {
         Log.debug(`Creating canvas for ${representation} (${orientation})${altSkin ? `as AltSkin` : ``}`)
         const canvasData = await SVG.load(
             canvasFilePath(projectPath, representation.id, orientation, altSkin)
         )
-        const canvas = new Canvas(canvasData, projectPath, representation, orientation, altSkin)
+        const canvas = new Canvas(canvasData, projectPath, representation, orientation, altSkin, system)
 
         const componentAnnotations = canvasData.findAnnotations(`@component`)
         Log.info(`Found ${componentAnnotations.length} component annotations`)
@@ -52,12 +56,13 @@ export class Canvas {
         return canvas
     }
 
-    constructor(canvas: SVG, projectPath: string, representation: Representation, orientation: OrientationString, altSkin: boolean) {
+    constructor(canvas: SVG, projectPath: string, representation: Representation, orientation: OrientationString, altSkin: boolean, system: GameTypeIdentifier) {
         this.canvas = canvas
         this.projectPath = projectPath
         this.representation = representation
         this.orientation = orientation
         this.altSkin = altSkin
+        this.system = system
     }
 
     /**
@@ -73,22 +78,69 @@ export class Canvas {
      */
     async loadElement(element: Annotation<`@element`>) {
         Log.info(`Loading element ${element} with config ${element.subValue}...`)
-        this.elements.push(await Element.load(this.projectPath, element))
+        this.elements.push(await Element.load(this.projectPath, element, this.system))
     }
 
     /**
      * Renders the canvas and adds it to the provided skinPack
      */
-    async pack(skinPack: AdmZip) {
+    public async packRenderedCanvas(skinPack: AdmZip) {
         skinPack.addFile(
             skinPackFilePath(this.representation.id, this.orientation, this.altSkin), 
             await this.render()
         )
     }
 
-    // addConfig(config: SkinConfiguration) {
+    /**
+     * Inserts this canvas' configuration as a representation or alt representation into the provided skin configuration
+     */
+    addCanvasConfig(config: SkinConfiguration) {
+        // create JSON path for representation.id and orientation
+        const representationConfig = {
+            assets: {
+                small: skinPackFilePath(this.representation.id, this.orientation, this.altSkin),
+                medium: skinPackFilePath(this.representation.id, this.orientation, this.altSkin),
+                large: skinPackFilePath(this.representation.id, this.orientation, this.altSkin)
+            },
+            items: this.elements.filter(element => element.kind === `item`).map(element => element.generate()).filter(item => item !== undefined),
+            screens: this.elements.filter(element => element.kind === `screen`).map(element => element.generate()).filter(screen => screen !== undefined),
+            mappingSize: this.representation.mappingSize,
+            //"extendedEdges" : {...},
+            // translucent: boolean
+        }
 
-    // }
+        const representationPath: string[] = [`$`]
+        this.altSkin ? representationPath.push(`altRepresentations`) : representationPath.push(`representations`)
+        switch(this.representation.id) {
+        case `iphone-standard`:
+            representationPath.push(`iphone`)
+            representationPath.push(`standard`)
+            break
+        case `iphone-e2e`:
+            representationPath.push(`iphone`)
+            representationPath.push(`edgeToEdge`)
+            break
+        case `ipad-standard`:
+            representationPath.push(`ipad`)
+            representationPath.push(`standard`)
+            break
+        case `ipad-splitview`:
+            representationPath.push(`ipad`)
+            representationPath.push(`splitView`)
+            break
+        }
+        switch(this.orientation) {
+        case `portrait`:
+            representationPath.push(`portrait`)
+            break
+        case `landscape`:
+            representationPath.push(`landscape`)
+            break
+        }
+
+        Log.debug(`Setting ${JSONPath.toPointer(representationPath)} to ${JSON.stringify(representationConfig)}`)
+        JSONPointer.set(config, JSONPath.toPointer(representationPath), representationConfig)
+    }
 
     // generateSkinConfigurationRepresentation(): SkinConfigurationRepresentation {
     //     return {}
@@ -97,7 +149,7 @@ export class Canvas {
     /**
      * Renders all components into the canvas and outputs a PNG file buffer
      */
-    async render(): Promise<Buffer> {
+    private async render(): Promise<Buffer> {
         const canvasCopy = await SVG.copy(this.canvas)
 
         const renderWidth = this.orientation === `portrait`
@@ -112,12 +164,16 @@ export class Canvas {
             Log.warn(`Up-scaling picture during render: ${JSON.stringify(this.representation)} (${this.orientation})`)
         }
 
-        Log.info(` - Rendering ${this.representation.id} in resolution ${renderWidth} x ${renderHeight}`)
+        Log.debug(` - Rendering ${this.representation.id} in resolution ${renderWidth} x ${renderHeight}`)
 
         for(const component of this.components) {
             await component.render(canvasCopy)
         }
 
         return canvasCopy.render(renderWidth, renderHeight)
+    }
+
+    toString(): string {
+        return `Canvas[${this.representation.id} (${this.orientation})${this.altSkin ? ` as altSkin` : ``}]`
     }
 }

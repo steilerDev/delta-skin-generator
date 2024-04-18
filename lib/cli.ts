@@ -6,7 +6,7 @@ import { OrientationString, Representation, REPRESENTATIONS } from "./constants.
 /**
  * Types required for running CLI app
  */
-type CLICommands = `render` | `init`
+type CLICommands = `render` | `init` | `docs`
 type CLIRepresentationString = `all` | `iphone` | `iphone-standard` | `iphone-e2e` | `ipad` | `ipad-standard` | `ipad-splitview`
 type CLIOrientationString = `all` | `portrait` | `landscape`
 
@@ -32,7 +32,7 @@ export const parseCLI = () => {
         --project-dir, -d       Specifies the directory, where the skin is located.
                                 Optional - defaults to '.'
         --output-dir, -o        Specifies the directory, were rendered skins should be written to.
-                                Optional - defaults to '--project-dir'
+                                Optional - defaults to 'project-dir/dist'
         --representations, -r   Limit the generated representations
                                 Optional - defaults to 'all'
                                 Possible values: 'all', 'iphone', 'iphone-standard', 'iphone-e2e', 'ipad', 'ipad-standard', 'ipad-splitview'
@@ -43,8 +43,9 @@ export const parseCLI = () => {
                                 Optional - defaults to 'false'
 
         Commands
-        render      Instructs the program to render the available / specified assets and creates a '.deltaskin' file.
+        render      Instructs the program to render the available / specified assets and creates a '.deltaskin' file. This is the default command, if no command is specified.
         init        Instructs the program to initialize the specified templates within the project structure (this will not overwrite existing files).
+        docs        Creates documentation assets based on the available / specified assets.
 
         Examples
         $ skin-maker --o 'iphone' render
@@ -57,7 +58,6 @@ export const parseCLI = () => {
             outputDir: {
                 type: `string`,
                 shortFlag: `o`,
-                default: `.`
             },
             projectDir: {
                 type: `string`,
@@ -98,7 +98,7 @@ export const parseCLI = () => {
     parsedArgs.projectDir = getAbsolutePath(cli.flags.projectDir)
     parsedArgs.outputDir = cli.flags.outputDir
         ? getAbsolutePath(cli.flags.outputDir)
-        : parsedArgs.projectDir
+        : path.join(parsedArgs.projectDir, `dist`)
 
     
     parsedArgs.relevantRepresentations = representationStringsToRepresentations(cli.flags.representations as CLIRepresentationString[])

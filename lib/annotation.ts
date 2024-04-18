@@ -25,7 +25,7 @@ export class Annotation<T extends AnnotationString> {
     }
 
     toString(): string {
-        return this.value + this.subValue
+        return this.value + this.subValue ? `/${this.subValue}` : ``
     }
 
     get value(): string {

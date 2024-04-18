@@ -1,14 +1,13 @@
 import path from "path"
 import { Annotation } from "./annotation.js"
 
-
 /**
  * Types defined within library
  */
 type RepresentationString = `iphone-standard` | `iphone-e2e` | `ipad-standard` | `ipad-splitview`
 export type OrientationString = `portrait` | `landscape`
 
-type RepresentationResolution = {
+export type RepresentationResolution = {
     width: number,
     height: number
 }
@@ -71,16 +70,46 @@ export const REPRESENTATIONS = {
     }
 }
 
+/**
+ * Expected screen resolutions by system - based on https://noah978.gitbook.io/delta-docs/skins#inputframe
+ */
+export const SCREEN_RESOLUTIONS = {
+    [`com.rileytestut.delta.game.gbc`]: {
+        width: 160,
+        height: 144
+    },
+    [`com.rileytestut.delta.game.gba`]: {
+        width: 240,
+        height: 160
+    },
+    [`com.rileytestut.delta.game.ds`]: {
+        width: 256,
+        height: 192
+    },
+    [`com.rileytestut.delta.game.nes`]: {
+        width: 256,
+        height: 240
+    },
+    [`com.rileytestut.delta.game.snes`]: {
+        width: 256,
+        height: 224
+    },
+    [`com.rileytestut.delta.game.n64`]: {
+        width: 256,
+        height: 224
+    }
+}
 
 export const DIR_REPRESENTATIONS = `representations`
 export const DIR_COMPONENTS = `components`
 const FILE_COMPONENTS_EXT = `.svg`
 const FILE_CANVAS_EXT = `.svg`
-export const DIR_ELEMENTS = `elements`
+export const DIR_ELEMENTS = `element-configs`
 const FILE_ELEMENTS_EXT = `.json`
 export const FILE_PROJECT = `skin.json`
 const FILE_REPRESENTATION_OUTPUT_EXT = `.png`
-export const FILE_PROJECT_OUTPUT = `config.json`
+export const FILE_PROJECT_OUTPUT = `info.json`
+export const FILE_SKIN_EXT = `.deltaskin`
 
 /**
  * @returns The path on the filesystem for representation SVG

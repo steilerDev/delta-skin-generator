@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { FILE_PROJECT, FILE_PROJECT_OUTPUT} from './constants.js'
+import { FILE_PROJECT, FILE_PROJECT_OUTPUT, FILE_SKIN_EXT} from './constants.js'
 import { Canvas } from './canvas.js'
 import { Log } from './log.js'
 import { ElementType } from './elements.js'
@@ -21,19 +21,11 @@ export type SkinConfiguration = {
     gameTypeIdentifier: GameTypeIdentifier,
     debug: boolean,
     translucent: boolean,
-    representations: {
-        iphone?: {
-            standard?: SkinConfigurationRepresentations
-            edgeToEdge?: SkinConfigurationRepresentations
-        },
-        ipad?: {
-            standard?: SkinConfigurationRepresentations,
-            splitView?: SkinConfigurationRepresentations
-        }
-    }
+    representations: SkinConfigurationRepresentations,
+    altRepresentations: SkinConfigurationRepresentations
 }
 
-type GameTypeIdentifier = 
+export type GameTypeIdentifier = 
     `com.rileytestut.delta.game.gbc` |
     `com.rileytestut.delta.game.gba` |
     `com.rileytestut.delta.game.ds` |
@@ -43,6 +35,17 @@ type GameTypeIdentifier =
     `com.rileytestut.delta.game.genesis`
 
 type SkinConfigurationRepresentations = {
+    iphone?: {
+        standard?: SkinConfigurationRepresentationsByOrientation,
+        edgeToEdge?: SkinConfigurationRepresentationsByOrientation
+    },
+    ipad?: {
+        standard?: SkinConfigurationRepresentationsByOrientation,
+        splitView?: SkinConfigurationRepresentationsByOrientation
+    }
+}
+
+type SkinConfigurationRepresentationsByOrientation = {
     landscape?: SkinConfigurationRepresentation,
     portrait?: SkinConfigurationRepresentation
 }
@@ -57,8 +60,8 @@ type SkinConfigurationRepresentation = {
 }
 
 type SkinConfigurationAssets = {
-    small: string,
-    medium: string,
+    small?: string,
+    medium?: string,
     large: string
 }
 
@@ -82,14 +85,30 @@ type SkinConfigurationDirections = {
     right?: number
 }
 
-type SkinConfigurationItem = {
-    inputs: ElementType[],
+export type SkinConfigurationItem = {
+    inputs: SkinConfigurationInputs,
     frame: SkinConfigurationDimensions,
     extendedEdges?: SkinConfigurationDirections
 }
 
-type SkinConfigurationScreen = {
-    inputFrame: SkinConfigurationDimensions,
+export type SkinConfigurationInputs = ElementType[] | SkinConfigurationInputDpad | SkinConfigurationInputThumbstick
+
+type SkinConfigurationInputDpad = {
+    up: `up`,
+    down: `down`,
+    left: `left`,
+    right: `right`
+}
+
+type SkinConfigurationInputThumbstick = {
+    up: `analogStickUp`,
+    down: `analogStickDown`,
+    left: `analogStickLeft`,
+    right: `analogStickRight`
+}
+
+export type SkinConfigurationScreen = {
+    inputFrame?: SkinConfigurationDimensions,
     outputFrame: SkinConfigurationDimensions,
     filters?: SkinConfigurationFilter
 }
@@ -107,7 +126,9 @@ export class Skin {
     canvas: Canvas[]
 
     static async loadProject(args: CLIArgs): Promise<Skin> {
-        const config = JSON.parse((await fs.readFile(path.join(args.projectDir, FILE_PROJECT))).toString()) as SkinGeneratorConfigurationFile
+        const configPath = path.join(args.projectDir, FILE_PROJECT)
+        Log.info(`Loading skin configuration from ${configPath}...`)
+        const config = JSON.parse((await fs.readFile(configPath)).toString()) as SkinGeneratorConfigurationFile
         const canvas: Canvas[] = []
         for(const representation of args.relevantRepresentations) {
             for(const orientation of args.relevantOrientations) {
@@ -116,10 +137,12 @@ export class Skin {
                         args.projectDir,
                         representation,
                         orientation,
-                        false
+                        false,
+                        config.system
                     ))
+                    Log.info(` - Loaded representation ${representation.id} with orientation ${orientation}`)
                 } catch (err) {
-                    Log.warn(`Unable to create representation ${representation.id} with orientation ${orientation}: ${err.message}`)
+                    Log.warn(` - Unable to load representation ${representation.id} with orientation ${orientation}: ${err.message}`)
                 }
                 if(args.altSkin) {
                     try {
@@ -127,10 +150,12 @@ export class Skin {
                             args.projectDir,
                             representation,
                             orientation,
-                            true
+                            true,
+                            config.system
                         ))
+                        Log.info(` - Loaded alt representation ${representation.id} with orientation ${orientation}`)
                     } catch (err) {
-                        Log.warn(`Unable to create representation alt ${representation.id} with orientation ${orientation}: ${err.message}`)
+                        Log.warn(` - Unable to load alt representation ${representation.id} with orientation ${orientation}: ${err.message}`)
                     }
                 }
             }
@@ -144,24 +169,28 @@ export class Skin {
     }
 
     async create(outputDir: string): Promise<boolean> {
-        const fileName = this.configuration.skinName + `-` + this.configuration.version + `.deltaskin`
+        const fileName = this.configuration.skinName + `-` + this.configuration.version + FILE_SKIN_EXT
         Log.info(`Creating skin ${this.configuration.skinName} by ${this.configuration.author} - writing file to ${fileName}`)
 
         const zip = new AdmZip()
 
-        Log.info(`Rendering canvas...`)
+        Log.info(`Rendering...`)
         const skinConfig = {} as SkinConfiguration
         skinConfig.name = this.configuration.skinName
         skinConfig.identifier = this.configuration.skinId
         skinConfig.gameTypeIdentifier = this.configuration.system
-        skinConfig.representations = {}
+        skinConfig.debug = false
 
         for(const canvas of this.canvas) {
-            await canvas.pack(zip)
-            //canvas.addConfig(skinConfig)
+            Log.info(` - Rendering ${canvas}...`)
+            await canvas.packRenderedCanvas(zip)
+            canvas.addCanvasConfig(skinConfig)
         }
 
         zip.addFile(FILE_PROJECT_OUTPUT, Buffer.from(JSON.stringify(skinConfig)))
+
+        // Making sure out dir exists
+        await fs.mkdir(outputDir, {recursive: true})
         return await zip.writeZipPromise(path.join(outputDir, fileName))
     }
 }

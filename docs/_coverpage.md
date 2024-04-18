@@ -7,7 +7,7 @@
 
 # Delta Skin Generator
 
-> Emulator skin creation tool for deltaskins
+> Emulator skin creation tool for deltaskin
 
 - Graphical
 - Component based

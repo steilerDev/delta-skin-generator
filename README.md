@@ -1,6 +1,6 @@
 # Delta Skin Generator
 
-This tool defines a component based framework for creating emulator Skins in the `.deltaskins` format (supported by [Delta](https://github.com/rileytestut/Delta) and [Ignited](https://github.com/LitRitt/Ignited)). These skins can be designed in a standard vector editor and by providing annotations to the source can be transformed into skins.
+This tool defines a component based framework for creating emulator Skins in the `.deltaskin` format (supported by [Delta](https://github.com/rileytestut/Delta) and [Ignited](https://github.com/LitRitt/Ignited)). These skins can be designed in a standard vector editor and by providing annotations to the source can be transformed into skins.
 
 > [!CAUTION]
 > Development is still ongoing - this tool is not working yet!
@@ -34,7 +34,7 @@ This tool defines a component based framework for creating emulator Skins in the
 
 - Design a skin in a vector editor and embed external components through annotations
 - Annotate your file to define emulator elements - no more coordinate calculations and translations!
-- Generate a `.deltaskins` file that can be used with Delta and Ignited
+- Generate a `.deltaskin` file that can be used with Delta and Ignited
 - Support for alt skins
 
 ## Discord
