@@ -26,3 +26,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - name: release/semantic-release-template
+      uses: cycjimmy/semantic-release-action@v4
+      with:
+        working_directory: gh-actions/semantic-release-template
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

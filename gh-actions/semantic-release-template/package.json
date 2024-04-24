@@ -1,0 +1,33 @@
+{
+  "name": "semantic-release-template",
+  "version": "0.0.0-development",
+  "description": "Semantic release configuration template when publishing Delta Skins through the delta-skin-generator GH action.",
+  "main": "semantic-release.delta-skin-generator.config.js",
+  "files": [
+    "semantic-release.delta-skin-generator.config.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/steilerDev/delta-skin-generator.git"
+  },
+  "keywords": [
+    "delta-skin-generator",
+    "semantic-release"
+  ],
+  "homepage": "https://dsg.steiler.dev",
+  "license": "GPL-3.0-or-later",
+  "release": {
+    "branches": [
+      "main",
+      {
+        "name": "dev",
+        "prerelease": true
+      }
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm"
+    ]
+  }
+}
