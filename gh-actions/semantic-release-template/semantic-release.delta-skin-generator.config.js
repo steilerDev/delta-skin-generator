@@ -9,7 +9,7 @@ module.exports = {
         [
             "@semantic-release/exec",
             {
-                prepareCmd: "jq '.version = \"${nextRelease.version}\" skin.json | sponge skin.json && delta-skin-generator render"
+                prepareCmd: "jq '.version = \"${nextRelease.version}\"' skin.json | sponge skin.json && delta-skin-generator render"
             }
         ],
         [
