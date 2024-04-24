@@ -8,7 +8,7 @@ import { componentFilePath} from "./constants.js"
  * The component class represents a visual component that will be rendered into the canvas
  */
 export class Component {
-    data: SVG
+    data?: SVG
     annotation: Annotation<`@component`>
 
     /**
@@ -16,12 +16,12 @@ export class Component {
      */
     static async load(projectPath: string, componentAnnotation: Annotation<`@component`>): Promise<Component> {
         return new Component(
-            await SVG.load(componentFilePath(projectPath, componentAnnotation)),
-            componentAnnotation
+            componentAnnotation,
+            componentAnnotation.value === `clear` ? undefined : await SVG.load(componentFilePath(projectPath, componentAnnotation))
         )
     }
 
-    constructor(componentData: SVG, componentAnnotation: Annotation<`@component`>) {
+    constructor(componentAnnotation: Annotation<`@component`>, componentData?: SVG) {
         this.data = componentData
         this.annotation = componentAnnotation
     }
@@ -30,6 +30,11 @@ export class Component {
      * This function will render the component into a pixel image and place it into the provided canvas
      */
     async render(renderTarget: SVG) {
+        if(this.data === undefined) {
+            Log.info(`  - Skipping clear component`)
+            JSONPointer.set(renderTarget.data, this.annotation.pathPointerToParent, undefined)
+            return
+        }
         Log.info(`  - Rendering component ${this.annotation.value}`)
         const parent = this.annotation.parentNode
         const dstWidth = Number.parseFloat(parent.attributes.width)

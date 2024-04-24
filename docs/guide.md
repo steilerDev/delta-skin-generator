@@ -1,6 +1,6 @@
 # Skin Creation Guide
 
-This guide will help you create a deltaskin file that can be used with the Delta and Ignited Emulator, from scratch using all features of this tool.
+This guide will help you create a `deltaskin` file that can be used with the Delta and Ignited Emulator, from scratch using all features of this tool.
 
 ## Installation and Initialization
 
@@ -39,7 +39,7 @@ The `init` command will ask for some properties of your skin to populate the [`s
 ```bash
 npx delta-skin-generator@latest
 ```
-5. Transfer the generated file onto your device and [load your skin](https://docs.ignitedemulator.com/using-ignited/settings/controller-skins).
+5. Transfer the generated file from the `dist` folder onto your device and [load your skin](https://docs.ignitedemulator.com/using-ignited/settings/controller-skins).
 6. In the emulator's pause screen, you can enable keyboard debugging to see the active areas.
 
 ## Creating a component
@@ -63,9 +63,8 @@ Elements can be further configured (e.g. in order to allow `extendedEdges` for c
 
 Use the `docs` command to generate a documentation of your skin. This will create a `docs` folder in your project directory containing a `README.md` file with all the information about your skin.
 
-> [!CAUTION]
+> [!WARNING]
 > This is not yet implemented
-
 
 In this example the last rectangle would be replaced by `component2` and become a dpad element in the emulator.
 

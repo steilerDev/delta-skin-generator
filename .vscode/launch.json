@@ -2,15 +2,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-    "name": "Debug",
-    "type": "node",
-    "request": "launch",
-    "runtimeExecutable": "node",
-    "runtimeArgs": ["--loader", "ts-node/esm", "--nolazy", "-r", "ts-node/register/transpile-only"],
-    "args": ["index.ts", "-d", "data1/"],
-    "cwd": "${workspaceRoot}",
-    "internalConsoleOptions": "openOnSessionStart",
-    "skipFiles": ["<node_internals>/**", "node_modules/**"]
+          "name": "Debug",
+          "type": "node",
+          "request": "launch",
+          "runtimeExecutable": "node",
+          "runtimeArgs": ["--loader", "ts-node/esm", "--nolazy", "-r", "ts-node/register/transpile-only"],
+          "args": ["index.ts", "-d", "data1/"],
+          "cwd": "${workspaceRoot}",
+          "internalConsoleOptions": "openOnSessionStart",
+          "skipFiles": ["<node_internals>/**", "node_modules/**"]
         }
       ]
     }

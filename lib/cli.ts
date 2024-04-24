@@ -1,5 +1,5 @@
 import meow from "meow"
-import { Log } from "./log.js"
+import meowHelp from "cli-meow-help"
 import path from 'path'
 import { OrientationString, Representation, RepresentationString } from "./representation.js"
 
@@ -9,6 +9,14 @@ import { OrientationString, Representation, RepresentationString } from "./repre
 type CLICommands = `render` | `init` | `docs`
 type CLIRepresentationString = `all` | `iphone` | `iphone-standard` | `iphone-e2e` | `ipad` | `ipad-standard` | `ipad-splitview`
 type CLIOrientationString = `all` | `portrait` | `landscape`
+
+type ParsedCLIArgs = {
+    projectDir: string,
+    outputDir: string,
+    representations: string[],
+    orientations: string[],
+    disableAltSkin: boolean,
+}
 
 export type CLIArgs = {
     command: CLICommands,
@@ -22,83 +30,83 @@ export type CLIArgs = {
  */
 export const parseCLI = () => {
     const parsedArgs = {} as CLIArgs
-    const cli = meow(`
-        Usage
-        $ skin-maker <options> [render | init]
 
-        Options
-        --project-dir, -d       Specifies the directory, where the skin is located.
-                                Optional - defaults to '.'
-        --output-dir, -o        Specifies the directory, were rendered skins should be written to.
-                                Optional - defaults to 'project-dir/dist'
-        --representations, -r   Limit the generated representations
-                                Optional - defaults to 'all'
-                                Possible values: 'all', 'iphone', 'iphone-standard', 'iphone-e2e', 'ipad', 'ipad-standard', 'ipad-splitview'
-        --orientations, -o      Limit the generated orientations
-                                Optional - defaults to 'all'
-                                Possible values: 'all', 'landscape', 'portrait'
-        --disable-alt-skin, -a  Disables AltSkin support.
-                                Optional - defaults to 'false'
+    const commands = {
+        render: {desc: `Instructs the program to render the available / specified assets and creates a '.deltaskin' file. This is the default command, if no command is specified.`},
+        init: {desc: `Instructs the program to initialize the specified templates within the project structure (this will not overwrite existing files).`},
+        docs: {desc: `Creates documentation assets based on the available / specified assets.`},
+    }
 
-        Commands
-        render      Instructs the program to render the available / specified assets and creates a '.deltaskin' file. This is the default command, if no command is specified.
-        init        Instructs the program to initialize the specified templates within the project structure (this will not overwrite existing files).
-        docs        Creates documentation assets based on the available / specified assets.
-
-        Examples
-        $ skin-maker --o 'iphone' render
-
-        See https://dsg.steiler.dev/#/guide for a detailed guide.
-    `, {
-        importMeta: import.meta,
-        allowUnknownFlags: false,
-        flags: {
-            outputDir: {
-                type: `string`,
-                shortFlag: `o`,
-            },
-            projectDir: {
-                type: `string`,
-                shortFlag: `d`,
-                default: `.`
-            },
-            representations: {
-                type: `string`,
-                shortFlag: `r`,
-                isMultiple: true,
-                choices: [`all`, `iphone`, `iphone-standard`, `iphone-e2e`, `ipad`, `ipad-standard`, `ipad-splitview`],
-                default: [`all`]
-            },
-            orientations: {
-                type: `string`,
-                shortFlag: `o`,
-                isMultiple: true,
-                choices: [`all`, `portrait`, `landscape`],
-                default: [`all`]
-            },
-            disableAltSkin: {
-                type: `boolean`,
-                shortFlag: `a`,
-                default: false
-            }
+    const flags = {
+        outputDir: {
+            desc: `Specifies the directory, were rendered skins should be written to`,
+            type: `string`,
+            shortFlag: `O`
+        },
+        projectDir: {
+            desc: `Specifies the directory, where the skin is located`,
+            type: `string`,
+            shortFlag: `d`,
+            default: `.`
+        },
+        representations: {
+            desc: `Limit the generated representations`,
+            type: `string`,
+            shortFlag: `r`,
+            isMultiple: true,
+            choices: [`all`, `iphone`, `iphone-standard`, `iphone-e2e`, `ipad`, `ipad-standard`, `ipad-splitview`],
+            default: [`all`]
+        },
+        orientations: {
+            desc: `Limit the generated orientations`,
+            type: `string`,
+            shortFlag: `o`,
+            isMultiple: true,
+            choices: [`all`, `portrait`, `landscape`],
+            default: [`all`]
+        },
+        disableAltSkin: {
+            desc: `Disables AltSkin support`,
+            type: `boolean`,
+            shortFlag: `a`,
+            default: false
         }
+    }
+
+    const helpText = meowHelp({
+        name: `delta-skin-generator`,
+        footer: `Made with <3 by steilerDev\nSee https://dsg.steiler.dev/#/guide for a detailed guide.`,
+        flags,
+        commands
     })
 
-    if(cli.input.length > 1) {
-        Log.error(`Unexpected command: ${cli.input.join(` `)}`)
-        return undefined
+    const cli = meow(helpText, {
+        importMeta: import.meta,
+        allowUnknownFlags: false,
+        autoHelp: true,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        flags: (flags as any)
+    })
+
+    if(cli.input.length > 1 || !Object.keys(commands).includes(cli.input[0])) {
+        const err = new Error(`Unknown command: ${cli.input.join(` `)}`);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (err as any).helpText = helpText
+        throw err
     }
 
     parsedArgs.command = cli.input.length === 1
         ? cli.input[0] as CLICommands
         : `render`
 
-    parsedArgs.projectDir = getAbsolutePath(cli.flags.projectDir)
-    parsedArgs.outputDir = cli.flags.outputDir
-        ? getAbsolutePath(cli.flags.outputDir)
+    const parsedCLIFlags = cli.flags as ParsedCLIArgs
+
+    parsedArgs.projectDir = getAbsolutePath(parsedCLIFlags.projectDir)
+    parsedArgs.outputDir = parsedCLIFlags.outputDir
+        ? getAbsolutePath(parsedCLIFlags.outputDir)
         : path.join(parsedArgs.projectDir, `dist`)
 
-    parsedArgs.representations = cliToRepresentations(cli.flags.representations as CLIRepresentationString[], cli.flags.orientations as CLIOrientationString[], cli.flags.disableAltSkin)
+    parsedArgs.representations = cliToRepresentations(parsedCLIFlags.representations as CLIRepresentationString[], parsedCLIFlags.orientations as CLIOrientationString[], parsedCLIFlags.disableAltSkin)
 
     return parsedArgs
 }

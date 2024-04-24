@@ -7,6 +7,7 @@
     "type": "git",
     "url": "https://github.com/steilerDev/delta-skin-generator.git"
   },
+  "homepage": "https://dsg.steiler.dev",
   "license": "GPL-3.0-or-later",
   "type": "module",
   "main": "dist/index.js",
@@ -22,6 +23,9 @@
     "execute": "node dist/index.js",
     "docs": "npx docsify serve docs"
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "release": {
     "branches": [
       "main",
@@ -32,9 +36,8 @@
     ]
   },
   "dependencies": {
-    "@types/adm-zip": "^0.5.5",
-    "@types/inquirer": "^9.0.7",
     "adm-zip": "^0.5.12",
+    "cli-meow-help": "^3.1.0",
     "inquirer": "^9.2.17",
     "jsonpath-plus": "^8.1.0",
     "jsonpointer": "^5.0.1",
@@ -43,6 +46,8 @@
     "svgson": "^5.3.1"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.5.5",
+    "@types/inquirer": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^7.6.0",
     "@typescript-eslint/parser": "^7.6.0",
     "docsify-cli": "^4.4.4",

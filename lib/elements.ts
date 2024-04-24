@@ -91,6 +91,7 @@ export class Element {
             element === `start` ||
             element === `dpad` ||
             element === `thumbstick` ||
+            element === `menu` ||
             element === `quickSave` ||
             element === `quickLoad` ||
             element === `fastForward` ||
@@ -142,7 +143,7 @@ export class Element {
             const dstWidth = Number.parseFloat(this.annotation.parentNode.attributes.width)
             const dstHeight = Number.parseFloat(this.annotation.parentNode.attributes.height)
             if(!Element.checkAspectRatio(this.system, dstWidth, dstHeight)) {
-                throw new Error(`Aspect ratio of screen ${this.annotation} does not match system ${this.system}`)
+                throw new Error(`Aspect ratio of screen ${this.annotation} (${dstWidth} x ${dstHeight}) does not match system ${this.system}`)
             }
         }
         if(!Element.checkCompatibility(this.system, this.type)) {

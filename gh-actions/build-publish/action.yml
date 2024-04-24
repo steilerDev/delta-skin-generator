@@ -1,0 +1,25 @@
+name: build-publish-skin
+description: Sets up the environment for the building the skin, runs the build command and releases the skin through semantic release
+inputs:
+  gh-token:
+    description: The GitHub token to release the skin
+    required: true
+runs:
+  using: composite
+  steps:
+    - id: setup-node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: 20
+    - id: setup-environment
+      shell: bash
+      run: npm i -g delta-skin-generator semantic-release @semantic-release/exec delta-skin-generator-release-config
+    - id: build-skin
+      shell: bash
+      run: delta-skin-generator render
+    - name: release-skin
+      uses: cycjimmy/semantic-release-action@v4
+      with:
+        extends: delta-skin-generator-release-config
+      env:
+        GITHUB_TOKEN: ${{ inputs.gh-token }}
