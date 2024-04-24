@@ -152,7 +152,7 @@ export class Template {
                                 height: (resolution.height/2).toString(),
                                 x: (resolution.width/4).toString(),
                                 y: (resolution.height/4).toString(),
-                                style: `fill:#000000;stroke:none`
+                                style: `fill:#000000;stroke:#000000`
                             },
                             children: [
                                 {
@@ -166,7 +166,7 @@ export class Template {
                                         {
                                             name: ``,
                                             type: `text`,
-                                            value: `@element/screen`,
+                                            value: `@element/screen@component/clear`,
                                             attributes: {
                                             },
                                             children: [
