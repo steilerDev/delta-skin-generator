@@ -15,20 +15,24 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
     - name: setup/app
       shell: bash
       run: npm ci
     - name: build/app
       shell: bash
       run: npm run build
-    - name: release/app
-      uses: cycjimmy/semantic-release-action@v4
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     - name: release/semantic-release-template
       uses: cycjimmy/semantic-release-action@v4
       with:
         working_directory: gh-actions/semantic-release-template
+        extra_plugins: "@semantic-release/exec"
       env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - name: release/app
+      uses: cycjimmy/semantic-release-action@v4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
