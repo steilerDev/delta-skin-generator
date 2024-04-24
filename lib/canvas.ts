@@ -74,7 +74,7 @@ export class Canvas {
      * Creates an element from the provided annotation
      */
     async loadElement(element: Annotation<`@element`>) {
-        Log.info(`Loading element ${element} with config ${element.subValue}...`)
+        Log.info(`Loading element ${element} ${element.subValue ? `with config `+ element.subValue : ``}...`)
         this.elements.push(await Element.load(this.projectPath, element, this.system))
     }
 
@@ -130,7 +130,7 @@ export class Canvas {
 
         representationPath.push(this.representation.orientation)
 
-        Log.debug(`Setting ${JSONPath.toPointer(representationPath)} to ${JSON.stringify(representationConfig)}`)
+        Log.debug(`Adding representation configuration to ${JSONPath.toPointer(representationPath)}`)
         JSONPointer.set(config, JSONPath.toPointer(representationPath), representationConfig)
     }
 
