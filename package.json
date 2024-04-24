@@ -16,7 +16,7 @@
     "dist/"
   ],
   "scripts": {
-    "build:lint": "npx eslint --fix --config eslint.config.json ./index.ts ./lib/**/*.ts",
+    "build:lint": "npx eslint --fix --config eslint.config.json ./index.ts ./lib/**/*.ts ./gh-actions/**/*.js",
     "build:knip": "npx knip --config knip.config.jsonc",
     "build:typescript": "npx tsc",
     "build": "npm run build:lint && npm run build:knip && npm run build:typescript",

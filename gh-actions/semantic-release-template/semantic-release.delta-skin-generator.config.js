@@ -2,29 +2,29 @@
  * @type {import('semantic-release').GlobalConfig}
  */
 module.exports = {
-    branches: ["main"],
+    branches: [`main`],
     plugins: [
         [
-            "@semantic-release/commit-analyzer",
+            `@semantic-release/commit-analyzer`,
             {
-                preset: 'angular',
+                preset: `angular`,
                 releaseRules: [
-                    { message: '**', release: 'patch' },
+                    { message: `**`, release: `patch` },
                 ]
             }
         ],
-        "@semantic-release/release-notes-generator",
+        `@semantic-release/release-notes-generator`,
         [
-            "@semantic-release/exec",
+            `@semantic-release/exec`,
             {
-                prepareCmd: "jq '.version = \"${nextRelease.version}\"' skin.json | sponge skin.json && delta-skin-generator render"
+                prepareCmd: `jq '.version = "\${nextRelease.version}"' skin.json | sponge skin.json && delta-skin-generator render`
             }
         ],
         [
-            "@semantic-release/github",
+            `@semantic-release/github`,
             {
-                assets: [ "dist/*.deltaskin"]
+                assets: [ `dist/*.deltaskin`]
             }
         ]
     ]
-  };
+}
