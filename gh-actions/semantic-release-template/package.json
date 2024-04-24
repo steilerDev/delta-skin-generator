@@ -1,5 +1,5 @@
 {
-  "name": "semantic-release-template",
+  "name": "delta-skin-semantic-release-template",
   "version": "0.0.0-development",
   "description": "Semantic release configuration template when publishing Delta Skins through the delta-skin-generator GH action.",
   "main": "semantic-release.delta-skin-generator.config.js",
