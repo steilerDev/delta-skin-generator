@@ -28,7 +28,7 @@
       [
         "@semantic-release/exec",
         {
-          "publishCmd": "echo \"$(git tag)\" && git push --delete origin v${nextRelease.version} && echo \"$(git tag)\""
+          "publishCmd": "echo \"$(git tag)\" && git tag --delete v${nextRelease.version} && git push --delete origin v${nextRelease.version} && echo \"$(git tag)\""
         }
       ],
       "@semantic-release/commit-analyzer",
