@@ -1,5 +1,5 @@
 {
-  "name": "delta-skin-semantic-release-template",
+  "name": "delta-skin-generator-release-config",
   "version": "0.0.0-development",
   "description": "Semantic release configuration template when publishing Delta Skins through the delta-skin-generator GH action.",
   "main": "semantic-release.delta-skin-generator.config.js",
@@ -25,14 +25,14 @@
       }
     ],
     "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
       [
         "@semantic-release/exec",
         {
-          "publishCmd": "echo \"$(git tag)\" && git tag --delete v${nextRelease.version} && git push --delete origin v${nextRelease.version} && echo \"$(git tag)\""
+          "publishCmd": "git tag --delete v${nextRelease.version} && git push --delete origin v${nextRelease.version}"
         }
       ],
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
       "@semantic-release/npm"
     ]
   }
