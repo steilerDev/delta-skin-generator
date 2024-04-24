@@ -25,15 +25,15 @@
       }
     ],
     "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/npm",
       [
         "@semantic-release/exec",
         {
-          "prepareCmd": "echo \"$(git tag)\" && git tag --delete v${nextRelease.version}"
+          "publishCmd": "echo \"$(git tag)\" && git tag --delete v${nextRelease.version}"
         }
-      ]
+      ],
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm"
     ]
   }
 }
