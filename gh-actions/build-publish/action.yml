@@ -8,12 +8,12 @@ runs:
   using: composite
   steps:
     - id: setup-node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version-file: 20
+        node-version: 20
     - id: setup-environment
       shell: bash
-      run: npm i -g delta-skin-generator semantic-release @semantic-release/exec delta-skin-generator-release-config
+      run: npm i -g delta-skin-generator
     - id: build-skin
       shell: bash
       run: delta-skin-generator render
@@ -21,5 +21,8 @@ runs:
       uses: cycjimmy/semantic-release-action@v4
       with:
         extends: delta-skin-generator-release-config
+        extra_plugins: |
+          @semantic-release/exec
+          delta-skin-generator-release-config
       env:
         GITHUB_TOKEN: ${{ inputs.gh-token }}
