@@ -4,7 +4,15 @@
 module.exports = {
     branches: ["main"],
     plugins: [
-        "@semantic-release/commit-analyzer",
+        [
+            "@semantic-release/commit-analyzer",
+            {
+                preset: 'angular',
+                releaseRules: [
+                    { message: '**', release: 'patch' },
+                ]
+            }
+        ],
         "@semantic-release/release-notes-generator",
         [
             "@semantic-release/exec",
