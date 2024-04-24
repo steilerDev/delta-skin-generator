@@ -13,7 +13,9 @@ runs:
         node-version: 20
     - id: setup-environment
       shell: bash
-      run: npm i -g delta-skin-generator
+      run: |
+        sudo apt-get install -y jq sponge
+        npm i -g delta-skin-generator
     - id: build-skin
       shell: bash
       run: delta-skin-generator render
