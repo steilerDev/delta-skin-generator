@@ -59,14 +59,10 @@ Elements can be further configured (e.g. in order to allow `extendedEdges` for c
 @element/dpad/dpadConfig"
 ```
 
-## Documentation
+## What's next?
 
-Use the `docs` command to generate a documentation of your skin. This will create a `docs` folder in your project directory containing a `README.md` file with all the information about your skin.
-
-> [!WARNING]
-> This is not yet implemented
-
-In this example the last rectangle would be replaced by `component2` and become a dpad element in the emulator.
+- Check out the [API documentation](api.md) for more details on all available configuration options and annotations.
+- If you plan to distribute your skin, check out the [Github Actions guide](github.md) to automate the build and release process.
 
 ## Projects
 
